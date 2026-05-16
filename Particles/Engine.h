@@ -2,6 +2,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Particle.h"
+#include "GameText.h"
+
 using namespace sf;
 using namespace std;
 
@@ -9,6 +11,9 @@ using namespace std;
 #define Message(input) std::cout << input << std::endl;
 #define MessageNE(input) std::cout << input;
 #define InputResponse(input) std::cin >> input;
+
+const int SCREEN_WIDTH = 1920;
+const int SCREEN_HEIGHT = 1080;
 
 enum class TextColor
 {
@@ -31,29 +36,72 @@ enum class TextColor
 	BrightWhite
 };
 
+enum class GameState
+{
+	Menu = 1,
+	Particles = 2,
+	Other = 3
+};
+
 class Engine
 {
 public:
 	/* Main Engine Constructor */
 	Engine();
 
+	static void Init()
+	{
+		if (!EngineInstance)
+		{
+			EngineInstance = new Engine;
+		}
+	}
+
+	/* Allows us to access our engine globally. */
+	static Engine* GetEngine()
+	{
+		return EngineInstance;
+	}
+
+	static void Shutdown()
+	{
+		delete EngineInstance;
+		EngineInstance = nullptr;
+	}
+
 	/* Run func that will call all the private functions */
 	void Run();
 
-	/* EXTRA: Engine Flags */
-	bool m_showText = false; // displays text on screen.
-
-	bool m_bIsZeroGravityOn = false; // toggle for zero gravity.
-
-private:
+	/* Getter of Current Window */
+	RenderWindow& GetWindow() { return m_Window; };
 
 	
+
+private:
 
 	/* Private functions for internal use only */
 	void Input();
 	void Update(float dtAsSeconds);
 	void Draw();
 
+public:
+	/* EXTRA: Engine Flags */
+
+	bool m_showText = false; // displays text on screen.
+
+	bool m_showDebugText = false; // displays text on screen.
+
+	bool m_bIsZeroGravityOn = false; // toggle for zero gravity.
+
+private:
+	
+	// using this from my other project.
+	static Engine* EngineInstance; // static pointer to the engine.
+
+	GameState m_gameState = GameState::Menu;
+	GameText m_menuText;
+
+	Font m_Font;
 
 	/* A regular RenderWindow */
 	RenderWindow m_Window;

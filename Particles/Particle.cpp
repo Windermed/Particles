@@ -49,10 +49,9 @@ Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosit
 void Particle::draw(RenderTarget& target, RenderStates states) const
 {
     VertexArray lines(TriangleFan, m_numPoints + 1);
-
-    // Build transform: convert Cartesian to pixel coords
-    // pixel_x = Cartesian_x + W/2
-    // pixel_y = H/2 - Cartesian_y
+    
+    // Maps Cartesian Coordinates to screen coords. it will then translate the origin to the center of screen
+    // after that, it will flip the y-axis so positive y will point upwards.
     Vector2u size = target.getSize();
     Transform transform;
     transform.translate(size.x / 2.0f, size.y / 2.0f);
@@ -63,6 +62,7 @@ void Particle::draw(RenderTarget& target, RenderStates states) const
     lines[0].position = m_centerCoordinate;
     lines[0].color = m_color1;
 
+    // assigns each outer vertex its cartesian position from m_A and applies the particle's secondary color.
     for (int j = 1; j <= m_numPoints; j++)
     {
         
@@ -70,6 +70,7 @@ void Particle::draw(RenderTarget& target, RenderStates states) const
         lines[j].color = m_color2;
     }
 
+    // draw
     target.draw(lines, states);
 }
 
@@ -80,6 +81,8 @@ void Particle::Update(float dt)
     scale(SCALE);
 
     float dx = m_vx * dt;
+
+    // checks to see if the engine flag for zero gravity is on or off.
     if (m_engine->m_bIsZeroGravityOn)
     {
         m_vy -= 0 * dt;
@@ -242,29 +245,39 @@ void Particle::unitTests()
     cout << "Score: " << score << " / 7" << endl;
 }
 
+bool Particle::IsOffScreen()
+{
+    Vector2u size = m_engine->GetWindow().getSize();
+    Vector2f center = this->GetCenter();
+
+    return center.x < -(size.x / 2.0f) || center.x >(size.x / 2.0f) || center.y < -(size.y / 2.0f) || center.y >(size.y / 2.0f);
+}
 void Particle::rotate(double theta)
 {
     Vector2f temp = m_centerCoordinate;
     translate(-m_centerCoordinate.x, -m_centerCoordinate.y);
     RotationMatrix R(theta);
-    this->m_A = R * this->m_A;
+    m_A = R * m_A; // no need to use this.
     translate(temp.x, temp.y);
 }
 
+// scales all vertices relative to the particle center
 void Particle::scale(double c)
 {
     Vector2f temp = m_centerCoordinate;
     translate(-m_centerCoordinate.x, -m_centerCoordinate.y);
 
     ScalingMatrix S(c);
-    this->m_A = S * this->m_A;
+    m_A = S * m_A;
     translate(temp.x, temp.y);
 }
 
+
+// shifts vertices and center coords by xShift and yShift
 void Particle::translate(double xShift, double yShift)
 {
     TranslationMatrix T(xShift, yShift, m_numPoints);
-    this->m_A = T + m_A;
+    m_A = T + m_A;
 
     m_centerCoordinate.x += (float)xShift;
     m_centerCoordinate.y += (float)yShift;

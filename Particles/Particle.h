@@ -10,13 +10,17 @@ const float SCALE = 0.999;
 using namespace Matrices;
 using namespace sf;
 
-class Engine; // EXTRA: forward declaring engine.
+class Engine; // (EXTRA!) forward declaring engine.
 
 class Particle : public Drawable
 {
 public:
+
 	Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition, Engine* owningEngine);
-	virtual void draw(RenderTarget& target, RenderStates states) const override;
+    virtual void draw(RenderTarget& target, RenderStates states) const override;
+
+public:
+	
     void Update(float dt);
     float getTTL() { return m_ttl; }
 
@@ -24,8 +28,12 @@ public:
     bool almostEqual(double a, double b, double eps = 0.0001);
     void unitTests();
 
-    /** EXTRA ADDITIONS */
+    /** (EXTRA!) ADDITIONS */
     float GetParticleY() { return m_vy; };
+
+    Vector2f GetCenter() const { return m_centerCoordinate; }
+
+    bool IsOffScreen();
 
 private:
     /* rotate Particle by theta radians counter - clockwise */
@@ -42,8 +50,7 @@ private:
 
 private:
 
-
-    // EXTRA
+    // (EXTRA!)
     Engine* m_engine; // this will allow me to point back to the current engine instance.
 
     float m_ttl;

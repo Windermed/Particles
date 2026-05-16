@@ -131,12 +131,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="GameText.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrices.cpp" />
     <ClCompile Include="Particle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h" />
+    <ClInclude Include="GameText.h" />
     <ClInclude Include="Matrices.h" />
     <ClInclude Include="Particle.h" />
   </ItemGroup>
