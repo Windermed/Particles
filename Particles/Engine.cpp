@@ -13,6 +13,8 @@ void Engine::Run()
 	Particle p(m_Window, 4, { (int)m_Window.getSize().x / 2, (int)m_Window.getSize().y / 2});
 	p.unitTests();
 
+	// could probably do something extra here to output true or false but idk if i have time.
+
 	Message("Unit has passed! Boot that Engine!");
 
 	while (m_Window.isOpen())
@@ -51,7 +53,12 @@ void Engine::Input()
 			if (event.mouseButton.button == Mouse::Left)
 			{
 
-				// TODO: Particle spawning.
+				for (int i = 0; i < 5; i++)
+				{
+					int numPoints = rand() % 26 + 25;
+					Vector2i clickPos(event.mouseButton.x, event.mouseButton.y);
+					m_particles.push_back(Particle(m_Window, numPoints, clickPos));
+				}
 			}
 		}
 
@@ -59,14 +66,34 @@ void Engine::Input()
 
 }
 
+// Engine Update.
 void Engine::Update(float dtAsSeconds)
 {
 	vector<Particle>::iterator it = m_particles.begin();
+	while (it != m_particles.end())
+	{
+		if (it->getTTL() > 0.0)
+		{
+			it->Update(dtAsSeconds);
+			++it;
+		}
+		else
+		{
+			it = m_particles.erase(it);
 
+		}
+	}
 }
 
 
 void Engine::Draw()
 {
+	m_Window.clear();
 
+	for (const Particle& p : m_particles)
+	{
+		m_Window.RenderTarget::draw(p);
+	}
+
+	m_Window.display();
 }

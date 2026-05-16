@@ -1,6 +1,6 @@
 #include "Particle.h"
 
-
+// TODO: DO SOMETHING EXTRA.
 Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition) : m_A(2, numPoints)
 {
     this->m_ttl = TTL;
@@ -46,12 +46,35 @@ Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosit
 
 void Particle::draw(RenderTarget& target, RenderStates states) const
 {
+    VertexArray lines(TriangleFan, m_numPoints + 1);
 
+    // maps the center coords to pixel space.
+    Vector2f center = (Vector2f)target.mapCoordsToPixel(m_centerCoordinate, m_cartesianPlane);
+
+    lines[0].position = center;
+    lines[0].color = m_color1;
+
+    for (int j = 1; j <= m_numPoints; j++)
+    {
+        Vector2f coord((float)m_A(0, j - 1), (float)m_A(1, j - 1));
+        lines[j].position = (Vector2f)target.mapCoordsToPixel(coord, m_cartesianPlane);
+        lines[j].color = m_color2;
+    }
+
+    target.draw(lines);
 }
 
 void Particle::Update(float dt)
 {
+    this->m_ttl -= dt;
+    rotate(dt * m_radiansPerSec);
+    scale(SCALE);
 
+    float dx = m_vx * dt;
+    m_vy -= 0 * dt;
+    float dy = m_vy * dt;
+
+    translate(dx, dy);
 }
 
 
@@ -204,15 +227,28 @@ void Particle::unitTests()
 
 void Particle::rotate(double theta)
 {
-
+    Vector2f temp = m_centerCoordinate;
+    translate(-m_centerCoordinate.x, -m_centerCoordinate.y);
+    RotationMatrix R(theta);
+    this->m_A = R * this->m_A;
+    translate(temp.x, temp.y);
 }
 
 void Particle::scale(double c)
 {
+    Vector2f temp = m_centerCoordinate;
+    translate(-m_centerCoordinate.x, -m_centerCoordinate.y);
 
+    ScalingMatrix S(c);
+    this->m_A = S * this->m_A;
+    translate(temp.x, temp.y);
 }
 
 void Particle::translate(double xShift, double yShift)
 {
+    TranslationMatrix T(xShift, yShift, m_numPoints);
+    this->m_A = T + m_A;
 
+    m_centerCoordinate.x + -(float)xShift;
+    m_centerCoordinate.y += (float)yShift;
 }
