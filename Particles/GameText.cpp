@@ -7,9 +7,29 @@ GameText::GameText()
 	m_font.loadFromFile("burbankbigcondensed_bold.otf");
 
 	this->setFont(m_font);
-	this->setString("Meet Potential Framework!");
 	this->setCharacterSize(48);
 	this->setFillColor(Color::White);
+	this->setString("Meet Potential Framework!"); // placeholder text.
+}
+
+GameText::GameText(String text) : GameText()
+{
+	this->setString(text);
+}
+
+GameText::GameText(String text, Vector2f position) : GameText(text)
+{
+	this->setPosition(position);
+}
+
+GameText::GameText(String text, Vector2f position, unsigned int fontSize) : GameText(text, position)
+{
+	this->setCharacterSize(fontSize);
+}
+
+GameText::GameText(String text, Vector2f position, unsigned int fontSize, Color color) : GameText(text, position, fontSize)
+{
+	this->setFillColor(color);
 }
 
 void GameText::CenterText(FloatRect bounds)

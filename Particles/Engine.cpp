@@ -10,17 +10,13 @@ Engine::Engine()
 
 	// (EXTRA) MENU
 
-	m_Font.loadFromFile("burbankbigcondensed_bold.otf");
-	
-	m_menuText.setFont(m_Font);
-	m_menuText.setCharacterSize(48);
-	m_menuText.setFillColor(Color::White);
 	m_menuText.setString("Press 1 - Particles\nPress 2 - TBD");
-
 	// center menu text.
 	m_showText = true;
 	FloatRect bounds = m_menuText.getLocalBounds();
 	m_menuText.CenterText(bounds);
+
+
 
 
 }
@@ -128,15 +124,14 @@ void Engine::Input()
 // Engine Update.
 void Engine::Update(float dtAsSeconds)
 {
-	
 	Vector2u size = m_Window.getSize();
-
 	vector<Particle>::iterator it = m_particles.begin();
+
 	while (it != m_particles.end())
 	{
 		// offscreen check.
 		
-		if (it->getTTL() > 0.0 && !it->IsOffScreen())
+		if (it->getTTL() > 0.0 && !it->IsOffScreen()) //
 		{
 			it->Update(dtAsSeconds);
 			++it;
@@ -180,9 +175,6 @@ void Engine::Draw()
 	{
 		// TODO: DECIDE.
 	}
-	
-
-	/* DISPLAY A LINE OF TEXT */
 
 	
 
