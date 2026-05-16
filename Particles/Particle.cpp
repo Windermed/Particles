@@ -3,10 +3,53 @@
 
 Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition) : m_A(2, numPoints)
 {
+    this->m_ttl = TTL;
+    this->m_numPoints = numPoints;
+    this->m_radiansPerSec = ((float)rand() / RAND_MAX) * M_PI;
+
+    this->m_cartesianPlane.setCenter(0, 0);
+    this->m_cartesianPlane.setSize(target.getSize().x, (-1.0) * target.getSize().y);
+
+    // maps the mouse click pos to Cartesian coords.
+    this->m_centerCoordinate = target.mapPixelToCoords(mouseClickPosition, m_cartesianPlane);
+
+    this->m_vx = (float)(rand() % 401 + 100);
+
+    if (rand() % 2 != 0)
+    {
+        this->m_vx *= -1;
+    }
+
+    this->m_vy = (float)(rand() % 401 + 100);
+
+    // Colors
+    this->m_color1 = Color::White;
+    this->m_color2 = Color(rand() % 256, rand() % 256, rand() % 256);
+
+    // starts generating numPoint vertices
+    float theta = ((float)rand() / RAND_MAX) * (M_PI / 2.0f);
+    float dTheta = 2.0f * M_PI / (numPoints - 1);
+
+    for (int j = 0; j < numPoints; j++)
+    {
+        float r = (float)(rand() % 61 + 20);
+        float dx = r * cos(theta);
+        float dy = r * sin(theta);
+
+        this->m_A(0, j) = m_centerCoordinate.x + dx;
+        this->m_A(1, j) = m_centerCoordinate.y + dy;
+
+        theta += dTheta;
+    }
 
 }
 
 void Particle::draw(RenderTarget& target, RenderStates states) const
+{
+
+}
+
+void Particle::Update(float dt)
 {
 
 }
