@@ -1,7 +1,7 @@
 #include "Particle.h"
 #include "Engine.h"
 
-// TODO: DO SOMETHING EXTRA.
+
 Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition, Engine* owningEngine) : m_A(2, numPoints), m_engine(owningEngine)
 {
     this->m_ttl = TTL;
@@ -76,13 +76,22 @@ void Particle::draw(RenderTarget& target, RenderStates states) const
 
 void Particle::Update(float dt)
 {
-    this->m_ttl -= dt;
+    m_ttl -= dt;
     rotate(dt * m_radiansPerSec);
-    scale(SCALE);
+
+    // checks to see if particle has scaling enabled.
+    if (m_shouldScale)
+    {
+        scale(SCALE);
+    }
+    
 
     float dx = m_vx * dt;
 
     // checks to see if the engine flag for zero gravity is on or off.
+    
+    bool bIsGravityActive = m_UseGravity && !m_engine->m_bIsZeroGravityOn;
+    /*
     if (m_engine->m_bIsZeroGravityOn)
     {
         m_vy -= 0 * dt;
@@ -91,6 +100,10 @@ void Particle::Update(float dt)
     {
         m_vy -= G * dt; // you can also set to 0 for zero gravity.
     }
+    */
+
+    m_vy -= bIsGravityActive ? G * dt : 0.0f;
+
     
     float dy = m_vy * dt;
 
@@ -252,6 +265,24 @@ bool Particle::IsOffScreen()
 
     return center.x < -(size.x / 2.0f) || center.x >(size.x / 2.0f) || center.y < -(size.y / 2.0f) || center.y >(size.y / 2.0f);
 }
+
+// returns the furthest vertex distance from center
+// which will essentially give us the particle's effective collision radius.
+float Particle::GetBoundingRadius() const
+{
+    float maxDist = 0.0f;
+    for (int j = 0; j < m_numPoints; j++)
+    {
+        float dx = (float)m_A(0, j) - m_centerCoordinate.x;
+        float dy = (float)m_A(1, j) - m_centerCoordinate.y;
+        float dist = sqrt(dx * dx + dy * dy);
+        maxDist = max(maxDist, dist);
+
+    }
+    return maxDist;
+}
+
+
 void Particle::rotate(double theta)
 {
     Vector2f temp = m_centerCoordinate;

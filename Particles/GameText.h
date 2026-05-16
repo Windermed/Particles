@@ -9,6 +9,9 @@ class Engine; // forward declaration (or else circular dependency headaches agai
 class GameText : public Text
 {
 private:
+
+	//const String FONT_PATH;
+
 	Font m_font; // TODO: MAKE FONT CONFIGURABLE.
 
 public:

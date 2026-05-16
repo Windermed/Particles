@@ -29,11 +29,20 @@ public:
     void unitTests();
 
     /** (EXTRA!) ADDITIONS */
+    void SetVelocity(float vx, float vy) { m_vx = vx; m_vy = vy; };
+
     float GetParticleY() { return m_vy; };
 
     Vector2f GetCenter() const { return m_centerCoordinate; }
 
     bool IsOffScreen();
+    
+    void SetScaling(bool bEnabled) { m_shouldScale = bEnabled; }
+
+    void ToggleGravity(bool bEnabled) { m_UseGravity = bEnabled; }
+
+    float GetBoundingRadius() const;
+
 
 private:
     /* rotate Particle by theta radians counter - clockwise */
@@ -52,6 +61,8 @@ private:
 
     // (EXTRA!)
     Engine* m_engine; // this will allow me to point back to the current engine instance.
+    bool m_shouldScale = true; // whether or not a particle is allowed to scale.
+    bool m_UseGravity = true; // whether or not a particle can use gravity.
 
     float m_ttl;
     int m_numPoints;

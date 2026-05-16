@@ -4,6 +4,7 @@
 #include "Particle.h"
 #include "GameText.h"
 #include "Player.h"
+#include "Spawner.h"
 
 using namespace sf;
 using namespace std;
@@ -37,11 +38,19 @@ enum class TextColor
 	BrightWhite
 };
 
-enum class GameState
+enum class GameMode
 {
 	Menu = 1,
 	Particles = 2,
-	Other = 3
+	BulletHell = 3
+};
+
+enum class GameState
+{
+	Win = 1,
+	GameOver = 2,
+	Playing = 3,
+	None = 3
 };
 
 class Engine
@@ -102,13 +111,34 @@ private:
 	// using this from my other project.
 	static Engine* EngineInstance; // static pointer to the engine.
 
-	GameState m_gameState = GameState::Menu;
+	GameMode m_gameMode = GameMode::Menu;
+	GameState m_GameState = GameState::None;
 	GameText m_menuText;
 
 	Font m_Font;
 
 	// PLAYER.
 	Player* m_Player;
+
+	// BULLET SPAWNER.
+	Spawner m_Spawner;
+
+	float m_flashTimer = 0.0f;
+
+	float m_flashDuration = 0.3f;
+
+	bool m_flashing = false;
+
+	RectangleShape m_flashOverlay;
+
+	GameText m_debugText;
+
+	GameText m_winText;
+	GameText m_livesText;
+	
+	GameText m_gameOverText;
+
+
 
 	/* A regular RenderWindow */
 	RenderWindow m_Window;

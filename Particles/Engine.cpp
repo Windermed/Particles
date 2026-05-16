@@ -12,11 +12,36 @@ Engine::Engine()
 
 	m_Player = new Player(); // we will need to use a pointer for our player.
 
-	m_menuText.setString("Press 1 - Particles\nPress 2 - TBD");
+	m_menuText.setString("Press 1 - Particles\nPress 2 - Bullet Hell");
+
 	// center menu text.
 	m_showText = true;
 	FloatRect bounds = m_menuText.getLocalBounds();
 	m_menuText.CenterText(bounds);
+
+	m_flashOverlay.setSize(Vector2f(SCREEN_WIDTH, SCREEN_HEIGHT));
+
+	m_flashOverlay.setFillColor(Color(255, 0, 0, 120));
+
+	// win text.
+	m_winText.setCharacterSize(96);
+	m_winText.setFillColor(Color::Red);
+	m_winText.setString("YOU WIN!");
+	m_winText.setFillColor(Color::Green);
+	FloatRect winBounds = m_winText.getLocalBounds();
+	m_winText.CenterText(winBounds);
+
+	// Lives text (Placeholder)
+	m_livesText.setCharacterSize(36);
+	m_livesText.setPosition(20.0f, 20.0f);
+
+	// game over text.
+	m_gameOverText.setCharacterSize(96);
+	m_winText.setFillColor(Color::Red);
+	m_gameOverText.setString("GAME OVER!");
+	FloatRect gbBounds = m_gameOverText.getLocalBounds();
+	m_gameOverText.CenterText(gbBounds);
+
 
 }
 
@@ -52,9 +77,16 @@ Player& Engine::GetPlayer()
 void Engine::Input()
 {
 	Event event;
+
+	// INPUTS.
 	while (m_Window.pollEvent(event))
 	{
-		// key pressing events.
+		
+		if (event.type == Event::Closed)
+		{
+			m_Window.close();
+		}
+
 		if (event.type == Event::KeyPressed)
 		{
 			// closes window on escape.
@@ -63,64 +95,121 @@ void Engine::Input()
 				m_Window.close();
 			}
 
-			if (event.type == Event::Closed)
+			// game state specific input
+			if (m_GameState == GameState::Win || m_GameState == GameState::GameOver)
 			{
-				m_Window.close();
-			}
-
-			/* TESTING FOR SMTH EXTRA */
-			if (event.key.code == Keyboard::Space)
-			{
-				m_showDebugText = !m_showDebugText;
-
-				m_bIsZeroGravityOn = !m_bIsZeroGravityOn;
-
-			}
-
-			/* (EXTRA!) A new Menu. */
-			if (m_gameState == GameState::Menu)
-			{
-				if (event.key.code == Keyboard::Num1)
+				switch (event.key.code)
 				{
-					m_gameState = GameState::Particles;
-				}
+				case Keyboard::R: // restarts the game.
 
-				// our new game state!
-				if (event.key.code == Keyboard::Num2)
+					m_gameMode = GameMode::BulletHell;
+					m_GameState = GameState::Playing;
+					m_Spawner.Reset();
+					m_particles.clear();
+					m_Player->ResetPlayer();
+					break;
+				case Keyboard::M: // returns to menu.
+					m_gameMode = GameMode::Menu;
+					m_GameState = GameState::Playing;
+					m_Spawner.Reset();
+					m_particles.clear();
+					m_Player->ResetPlayer();
+					break;
+				default:
+					break;
+				}
+				continue; // block all other input.
+			}
+
+			// menu input
+			if (m_gameMode == GameMode::Menu)
+			{
+				switch (event.key.code)
 				{
-					m_gameState = GameState::Other;
-					//m_Player = new Player();
+				case Keyboard::Num1: // pressing 1 switches to particles.
+					m_gameMode = GameMode::Particles;
+					m_GameState = GameState::Playing;
+					break;
+
+				case Keyboard::Num2: // pressing 2 switches to bullet hell.
+					m_gameMode = GameMode::BulletHell;
+					m_Spawner.Reset();
+					m_particles.clear();
+					m_Player->ResetPlayer();
+					break;
+
+				default:
+					break;
 				}
 			}
 
-			// in case we want to return back to the menu
-			if (event.key.code == Keyboard::M)
+			// input for particles (OG Project)
+			if (m_gameMode == GameMode::Particles)
 			{
-				m_gameState = GameState::Menu;
+				switch (event.key.code)
+				{
+				case Keyboard::Space: // toggles gravity and displays a text.
+					m_showDebugText = !m_showDebugText;
+					m_bIsZeroGravityOn = !m_bIsZeroGravityOn;
+					for (Particle& p : m_particles)
+					{
+						p.ToggleGravity(!m_bIsZeroGravityOn);
+					}
+					break;
+
+				case Keyboard::M: // return to menu.
+					m_gameMode = GameMode::Menu;
+					break;
+
+				default:
+					break;
+				}
+			}
+
+			// input for bullet hell
+			if (m_gameMode == GameMode::BulletHell)
+			{
+				switch (event.key.code)
+				{
+				case Keyboard::M: // return to menu.
+					m_gameMode = GameMode::Menu;
+					break;
+
+				case Keyboard::LShift:
+					GetPlayer().SetSpeed(160.0f);
+				
+				default:
+					break;
+				}
 			}
 		}
 		
-		// regular mouse clicks. checks if also Particle GameState is present.
-		if (event.type == Event::MouseButtonPressed && m_gameState == GameState::Particles)
+		// mouse input for particles mode ONLY.
+
+		if (m_gameMode == GameMode::Particles)
 		{
-			if (event.mouseButton.button == Mouse::Left)
+			// regular mouse clicks. checks if also Particle GameState is present.
+			if (event.type == Event::MouseButtonPressed)
 			{
-				for (int i = 0; i < 5; i++)
+				if (event.mouseButton.button == Mouse::Left)
 				{
-					int numPoints = rand() % 26 + 25; // was gonna do 50 but rip fps.
-					Vector2i clickPos(event.mouseButton.x, event.mouseButton.y);
-					m_particles.push_back(Particle(m_Window, numPoints, clickPos, this));
+					for (int i = 0; i < 5; i++)
+					{
+						int numPOints = rand() % 26 + 25;
+						Vector2i clickPos(event.mouseButton.x, event.mouseButton.y);
+						m_particles.push_back(Particle(m_Window, numPOints, clickPos, this));
+					}
 				}
 			}
-		}
 
-		// Allows you to spawn particles while holding left on ur mouse
-		if (Mouse::isButtonPressed(Mouse::Left) && m_gameState == GameState::Particles)
-		{
-			Vector2i mousePos = Mouse::getPosition(m_Window);
-			int numPoints = rand() % 26 + 25; // was gonna do 50 but rip fps
+			// Allows you to spawn particles while holding left on ur mouse
+			if (Mouse::isButtonPressed(Mouse::Left))
+			{
+				Vector2i mousePos = Mouse::getPosition(m_Window);
+				int numPoints = rand() % 26 + 25; // was gonna do 50 but rip fps
 
-			m_particles.push_back(Particle(m_Window, numPoints, mousePos, this));
+				m_particles.push_back(Particle(m_Window, numPoints, mousePos, this));
+			}
 		}
 
 	}
@@ -132,27 +221,99 @@ void Engine::Update(float dtAsSeconds)
 {
 	Vector2u size = m_Window.getSize();
 	vector<Particle>::iterator it = m_particles.begin();
-
-	if (m_gameState == GameState::Other)
+	
+	
+	if (m_gameMode == GameMode::BulletHell)
 	{
+		// if our gamestate is set to win or gameover, stop everything.
+		if (m_GameState == GameState::Win || m_GameState == GameState::GameOver)
+		{
+			return;
+		}
+
+
+		// update the flash timer
+		if (m_flashing)
+		{
+			m_flashTimer += dtAsSeconds;
+			if (m_flashTimer >= m_flashDuration)
+			{
+				m_flashing = false;
+				m_flashTimer = 0.0f;
+			}
+		}
+
+		// update our player
 		m_Player->Update(dtAsSeconds);
-	}
 
-	while (it != m_particles.end())
+		// update our bullet spawner.
+		m_Spawner.Update(dtAsSeconds, m_Window, m_particles);
+
+		// updates particles and we check for collision.
+		vector<Particle>::iterator it = m_particles.begin();
+		while (it != m_particles.end())
+		{
+			bool offScreen = it->IsOffScreen();
+			bool expired = it->getTTL() <= 0.0f;
+
+			// Check for collision with player.
+			if (m_Player->CheckHit(it->GetCenter(), it->GetBoundingRadius()))
+			{
+				m_Player->LoseLife();
+				m_flashing = true;
+				m_flashTimer = 0.0f;
+				m_Player->ResetPosition();
+				it = m_particles.erase(it);
+
+				if (m_Player->GetLives() <= 0)
+				{
+					m_GameState = GameState::GameOver;
+					m_Spawner.Reset();
+					m_particles.clear();
+					break;
+				}
+				continue;
+			}
+
+			if (!expired && !offScreen)
+			{
+				it->Update(dtAsSeconds);
+				++it;
+			}
+			else
+			{
+				it = m_particles.erase(it);
+			}
+		}
+
+		// check for a win. if our bullet pattern is done and there are no particles left.
+		if (m_Spawner.IsPatternComplete() && m_particles.empty())
+		{
+			m_GameState = GameState::Win;
+		}
+
+		// update the live HUD
+		m_livesText.setString("Lives: " + to_string(m_Player->GetLives()));
+	}
+	else
 	{
-		// offscreen check.
-		
-		if (it->getTTL() > 0.0 && !it->IsOffScreen())
+		while (it != m_particles.end())
 		{
-			it->Update(dtAsSeconds);
-			++it;
-		}
-		else
-		{
-			it = m_particles.erase(it);
 
+			if (it->getTTL() > 0.0 && !it->IsOffScreen())
+			{
+				it->Update(dtAsSeconds);
+				++it;
+			}
+			else
+			{
+				it = m_particles.erase(it);
+
+			}
 		}
 	}
+
+	
 }
 
 
@@ -160,32 +321,62 @@ void Engine::Draw()
 {
 	m_Window.clear();
 
-	if (m_gameState == GameState::Menu)
+
+	switch (m_gameMode)
 	{
-		m_Window.draw(m_menuText);
-	}
-	else if (m_gameState == GameState::Particles) // THE ACTUAL PROJECT.
-	{
-		for (const Particle& p : m_particles)
+		case GameMode::Menu:
 		{
-			m_Window.draw(p);
+			m_Window.draw(m_menuText);
+			break;
+		}
+		case GameMode::Particles:
+		{
+			for (const Particle& p : m_particles)
+			{
+				m_Window.draw(p);
+			}
+
+			if (m_showDebugText)
+			{
+
+				FloatRect bounds = m_debugText.getLocalBounds();
+
+				m_debugText.CenterText(bounds);
+
+				m_Window.draw(m_debugText);
+			}
+			break;
 		}
 
-		if (m_showDebugText)
+		case GameMode::BulletHell:
 		{
-			GameText text;
+			for (const Particle& p : m_particles)
+				m_Window.draw(p);
 
-			FloatRect bounds = text.getLocalBounds();
+			m_Player->Draw(m_Window);
+			m_Window.draw(m_livesText);
 
-			text.CenterText(bounds);
-
-			m_Window.draw(text);
+			// flash overlay when player is hit
+			if (m_flashing)
+			{
+				m_Window.draw(m_flashOverlay);
+			}
+			break;
 		}
+
 	}
-	else if (m_gameState == GameState::Other)
+
+	// game states
+	switch (m_GameState)
 	{
-		// TODO: DECIDE.
-		m_Player->Draw(m_Window);
+		case GameState::Win:
+			m_Window.draw(m_winText);
+			break;
+		case GameState::GameOver:
+			m_Window.draw(m_gameOverText);
+			break;
+		case GameState::None:
+			break;
 	}
 
 	
