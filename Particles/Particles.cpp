@@ -1,80 +1,172 @@
-#include <SFML/Graphics.hpp>
+#include "Particle.h"
 
-#include <iostream>
 
-using namespace sf;
-using namespace std;
-
-int main()
+Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition) : m_A(2, numPoints)
 {
 
-	int pixelWidth = VideoMode::getDesktopMode().width;
-	int pixelHeight = VideoMode::getDesktopMode().height;
+}
 
-	VideoMode vm(pixelWidth, pixelHeight);
+void Particle::draw(RenderTarget& target, RenderStates states) const
+{
 
-	RenderWindow window(vm, "Rainbow Screen", Style::Default);
-
-	VertexArray particle1(TriangleFan);
-	particle1.resize(7);
-	
-	View cartesianPlane;
-	cartesianPlane.setCenter(0, 0);
-	cartesianPlane.setSize(pixelWidth, -1.0 * pixelHeight);
+}
 
 
-	Vector2f centerCoordinate = { (float)pixelWidth / 2.0f, (float)pixelHeight / 2.0f };
-	
-	Vector2f centerPixels = { (float)pixelWidth / 2.0f, (float)pixelHeight / 2.0f };
-	//Vector2f centerCoordinate = window.mapPixelToCoords(centerPixel, cartesianPlane);
+bool Particle::almostEqual(double a, double b, double eps)
+{
+    return fabs(a - b) < eps;
+}
+
+void Particle::unitTests()
+{
+    int score = 0;
+
+    cout << "Testing RotationMatrix constructor...";
+    double theta = M_PI / 4.0;
+    RotationMatrix r(M_PI / 4);
+    if (r.getRows() == 2 && r.getCols() == 2 && almostEqual(r(0, 0), cos(theta))
+        && almostEqual(r(0, 1), -sin(theta))
+        && almostEqual(r(1, 0), sin(theta))
+        && almostEqual(r(1, 1), cos(theta)))
+    {
+        cout << "Passed.  +1" << endl;
+        score++;
+    }
+    else
+    {
+        cout << "Failed." << endl;
+    }
+
+    cout << "Testing ScalingMatrix constructor...";
+    ScalingMatrix s(1.5);
+    if (s.getRows() == 2 && s.getCols() == 2
+        && almostEqual(s(0, 0), 1.5)
+        && almostEqual(s(0, 1), 0)
+        && almostEqual(s(1, 0), 0)
+        && almostEqual(s(1, 1), 1.5))
+    {
+        cout << "Passed.  +1" << endl;
+        score++;
+    }
+    else
+    {
+        cout << "Failed." << endl;
+    }
+
+    cout << "Testing TranslationMatrix constructor...";
+    TranslationMatrix t(5, -5, 3);
+    if (t.getRows() == 2 && t.getCols() == 3
+        && almostEqual(t(0, 0), 5)
+        && almostEqual(t(1, 0), -5)
+        && almostEqual(t(0, 1), 5)
+        && almostEqual(t(1, 1), -5)
+        && almostEqual(t(0, 2), 5)
+        && almostEqual(t(1, 2), -5))
+    {
+        cout << "Passed.  +1" << endl;
+        score++;
+    }
+    else
+    {
+        cout << "Failed." << endl;
+    }
 
 
-	/*
-	* 
-	particle1[0].color = Color::Blue;
-	particle1[0].position = centerCoordinate;
+    cout << "Testing Particles..." << endl;
+    cout << "Testing Particle mapping to Cartesian origin..." << endl;
+    if (m_centerCoordinate.x != 0 || m_centerCoordinate.y != 0)
+    {
+        cout << "Failed.  Expected (0,0).  Received: (" << m_centerCoordinate.x << "," << m_centerCoordinate.y << ")" << endl;
+    }
+    else
+    {
+        cout << "Passed.  +1" << endl;
+        score++;
+    }
 
-	particle1[1].color = Color::Cyan;
-	particle1[1].position = { centerCoordinate.x + 100.0f, centerCoordinate.y + 50.0f };
+    cout << "Applying one rotation of 90 degrees about the origin..." << endl;
+    Matrix initialCoords = m_A;
+    rotate(M_PI / 2.0);
+    bool rotationPassed = true;
+    for (int j = 0; j < initialCoords.getCols(); j++)
+    {
+        if (!almostEqual(m_A(0, j), -initialCoords(1, j)) || !almostEqual(m_A(1, j), initialCoords(0, j)))
+        {
+            cout << "Failed mapping: ";
+            cout << "(" << initialCoords(0, j) << ", " << initialCoords(1, j) << ") ==> (" << m_A(0, j) << ", " << m_A(1, j) << ")" << endl;
+            rotationPassed = false;
+        }
+    }
+    if (rotationPassed)
+    {
+        cout << "Passed.  +1" << endl;
+        score++;
+    }
+    else
+    {
+        cout << "Failed." << endl;
+    }
 
-	particle1[2].color = Color::Yellow;
-	particle1[2].position = { centerCoordinate.x + 100.0f, centerCoordinate.y + 0.0f };
+    cout << "Applying a scale of 0.5..." << endl;
+    initialCoords = m_A;
+    scale(0.5);
+    bool scalePassed = true;
+    for (int j = 0; j < initialCoords.getCols(); j++)
+    {
+        if (!almostEqual(m_A(0, j), 0.5 * initialCoords(0, j)) || !almostEqual(m_A(1, j), 0.5 * initialCoords(1, j)))
+        {
+            cout << "Failed mapping: ";
+            cout << "(" << initialCoords(0, j) << ", " << initialCoords(1, j) << ") ==> (" << m_A(0, j) << ", " << m_A(1, j) << ")" << endl;
+            scalePassed = false;
+        }
+    }
+    if (scalePassed)
+    {
+        cout << "Passed.  +1" << endl;
+        score++;
+    }
+    else
+    {
+        cout << "Failed." << endl;
+    }
 
-	particle1[3].color = Color::Magenta;
-	particle1[3].position = { centerCoordinate.x + 50.0f, centerCoordinate.y - 50.0f };
+    cout << "Applying a translation of (10, 5)..." << endl;
+    initialCoords = m_A;
+    translate(10, 5);
+    bool translatePassed = true;
+    for (int j = 0; j < initialCoords.getCols(); j++)
+    {
+        if (!almostEqual(m_A(0, j), 10 + initialCoords(0, j)) || !almostEqual(m_A(1, j), 5 + initialCoords(1, j)))
+        {
+            cout << "Failed mapping: ";
+            cout << "(" << initialCoords(0, j) << ", " << initialCoords(1, j) << ") ==> (" << m_A(0, j) << ", " << m_A(1, j) << ")" << endl;
+            translatePassed = false;
+        }
+    }
+    if (translatePassed)
+    {
+        cout << "Passed.  +1" << endl;
+        score++;
+    }
+    else
+    {
+        cout << "Failed." << endl;
+    }
 
-	particle1[4].color = Color::Red;
-	particle1[4].position = { centerCoordinate.x + 0.0f, centerCoordinate.y - 100.0f };
+    cout << "Score: " << score << " / 7" << endl;
+}
 
-	particle1[5].color = Color::White;
-	particle1[5].position = { centerCoordinate.x - 100.0f, centerCoordinate.y - 50.0f };
+void Particle::rotate(double theta)
+{
 
-	particle1[6].color = Color::White;
-	particle1[6].position = { centerCoordinate.x - 50.0f, centerCoordinate.y + 0.0f };
-	
-	*/
+}
 
-	while (window.isOpen())
-	{
-		///Input
-		if (Keyboard::isKeyPressed(Keyboard::Escape))
-		{
-			window.close();
+void Particle::scale(double c)
+{
 
-		}
-		///Update
+}
 
-		///Draw
-
-		window.clear();
-		window.draw(particle1);
-		//window.draw(...);
-
-		window.display();
-
-	}
-
-
-
+void Particle::translate(double xShift, double yShift)
+{
 
 }
