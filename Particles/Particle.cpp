@@ -1,7 +1,8 @@
 #include "Particle.h"
+#include "Engine.h"
 
 // TODO: DO SOMETHING EXTRA.
-Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition) : m_A(2, numPoints)
+Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition, Engine* owningEngine) : m_A(2, numPoints), m_engine(owningEngine)
 {
     this->m_ttl = TTL;
     this->m_numPoints = numPoints;
@@ -66,9 +67,7 @@ void Particle::draw(RenderTarget& target, RenderStates states) const
     {
         
         lines[j].position = Vector2f((float)m_A(0, j - 1), (float)m_A(1, j - 1));
-
-        float ratio = m_ttl / TTL;
-        lines[j].color = Color((Uint8)(m_color2.r * ratio), (Uint8)(m_color2.g * ratio), (Uint8)(m_color2.b * ratio));
+        lines[j].color = m_color2;
     }
 
     target.draw(lines, states);
@@ -81,7 +80,15 @@ void Particle::Update(float dt)
     scale(SCALE);
 
     float dx = m_vx * dt;
-    m_vy -= G * dt; // you can also set to 0 for zero gravity.
+    if (m_engine->m_bIsZeroGravityOn)
+    {
+        m_vy -= 0 * dt;
+    }
+    else 
+    {
+        m_vy -= G * dt; // you can also set to 0 for zero gravity.
+    }
+    
     float dy = m_vy * dt;
 
     translate(dx, dy);

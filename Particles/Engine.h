@@ -40,6 +40,11 @@ public:
 	/* Run func that will call all the private functions */
 	void Run();
 
+	/* EXTRA: Engine Flags */
+	bool m_showText = false; // displays text on screen.
+
+	bool m_bIsZeroGravityOn = false; // toggle for zero gravity.
+
 private:
 
 	
@@ -56,6 +61,5 @@ private:
 	/* Vector for particles. */
 	vector<Particle> m_particles;
 
-	bool m_showText = false; // EXPERIMENTAL.
 
 };

@@ -11,7 +11,7 @@ void Engine::Run()
 	Clock clock; // initializing clock.
 
 	Message("Starting up Unit Tester..");
-	Particle p(m_Window, 4, { (int)m_Window.getSize().x / 2, (int)m_Window.getSize().y / 2});
+	Particle p(m_Window, 4, { (int)m_Window.getSize().x / 2, (int)m_Window.getSize().y / 2}, this);
 	p.unitTests();
 
 	// could probably do something extra here to output true or false but idk if i have time.
@@ -47,6 +47,9 @@ void Engine::Input()
 			if (event.key.code == Keyboard::Space)
 			{
 				m_showText = !m_showText;
+
+				m_bIsZeroGravityOn = !m_bIsZeroGravityOn;
+
 			}
 		}
 
@@ -63,7 +66,7 @@ void Engine::Input()
 				{
 					int numPoints = rand() % 26 + 25; // was gonna do 50 but rip fps.
 					Vector2i clickPos(event.mouseButton.x, event.mouseButton.y);
-					m_particles.push_back(Particle(m_Window, numPoints, clickPos));
+					m_particles.push_back(Particle(m_Window, numPoints, clickPos, this));
 				}
 			}
 		}
@@ -74,7 +77,7 @@ void Engine::Input()
 			Vector2i mousePos = Mouse::getPosition(m_Window);
 			int numPoints = rand() % 26 + 25; // was gonna do 50 but rip fps
 
-			m_particles.push_back(Particle(m_Window, numPoints, mousePos));
+			m_particles.push_back(Particle(m_Window, numPoints, mousePos, this));
 		}
 
 	}
@@ -118,7 +121,7 @@ void Engine::Draw()
 		font.loadFromFile("burbankbigcondensed_bold.otf");
 		Text text;
 		text.setFont(font);
-		text.setString("Meet Potential Framework!"); // temp text.
+		text.setString("Meet Potential Framework!");
 		text.setCharacterSize(48);
 		text.setFillColor(Color::White);
 		
