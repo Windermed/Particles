@@ -6,26 +6,26 @@ Engine::Engine()
 
 }
 
-void Engine::run()
+void Engine::Run()
 {
 
 
 }
 
-void Engine::input()
+void Engine::Input()
 {
 
 
 }
 
-void Engine::update(float dtAsSeconds)
+void Engine::Update(float dtAsSeconds)
 {
 
 
 }
 
 
-void Engine::draw()
+void Engine::Draw()
 {
 
 }

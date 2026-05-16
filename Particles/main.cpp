@@ -3,9 +3,9 @@
 int main()
 {
 	// Declare an instance of Engine
-	Engine engine;
+	//Engine engine;
 	// Start the engine
-	engine.run();
+	Engine::Run();
 	// Quit in the usual way when the engine is stopped
 	return 0;
 }

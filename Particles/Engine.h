@@ -7,23 +7,25 @@ using namespace std;
 
 class Engine
 {
-private:
-	// A regular RenderWindow
-	RenderWindow m_Window;
-
-	//vector for Particles
-	vector<Particle> m_particles;
-
-	// Private functions for internal use only
-	void input();
-	void update(float dtAsSeconds);
-	void draw();
-
 public:
-	// The Engine constructor
+	/* Main Engine Constructor */
 	Engine();
 
-	// Run will call all the private functions
-	void run();
+	/* Run func that will call all the private functions */
+	static void Run();
+
+private:
+
+	/* Private functions for internal use only */
+	void Input();
+	void Update(float dtAsSeconds);
+	void Draw();
+
+
+	/* A regular RenderWindow */
+	RenderWindow m_Window;
+
+	/* Vector for particles. */
+	vector<Particle> m_particles;
 
 };

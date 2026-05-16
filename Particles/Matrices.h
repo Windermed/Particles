@@ -34,10 +34,10 @@ namespace Matrices
             }
 
             /* Gets rows. */
-            int getRows() const{return rows;}
+            int GetRows() const{return rows;}
 
             /* Gets cols. */
-            int getCols() const{return cols;}
+            int GetCols() const{return cols;}
 
             
         protected:
@@ -70,6 +70,8 @@ namespace Matrices
 
     /*******************************************************************************/
 
+    // first attempt at writing comments like this.
+
     /**
     * @brief A 2D rotation matrix.
     *
@@ -85,8 +87,8 @@ namespace Matrices
             * @brief Constructs a 2x2 counter-clocwise rotation matrix.
             * Then assign each element as follows:
             * @code
-            * [cos(theta)  -sin(theta)]
-            * [sin(theta)   cos(theta)]
+            * [cos(theta) - sin(theta)]
+            * [sin(theta) cos(theta) 
             * @endcode
             *
             * @param theta represents the angle of rotation in radians, counter-clockwise
@@ -137,7 +139,7 @@ namespace Matrices
             *
             * paramaters are xShift, yShift, and nCols
             * nCols represents the number of columns in the matrix
-            * where each column contains one (x,y) coordinate pair,
+            * where each column contains one (x,y) coordinate pair;e
             */
             TranslationMatrix(double xShift, double yShift, int nCols);
     };

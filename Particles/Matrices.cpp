@@ -12,12 +12,43 @@ namespace Matrices
 
 	Matrix operator+(const Matrix& a, const Matrix& b)
 	{
-		return Matrix(a.getRows(), a.getCols()); // TEMP.
+		if (a.GetRows() != b.GetRows() || a.GetCols() != b.GetCols())
+		{
+			throw runtime_error("Matrix dimensions do NOT match for addition."); // just in case.
+		}
+
+		Matrix result(a.GetRows(), a.GetCols());
+
+		for (int i = 0; i < a.GetRows(); i++)
+		{
+			for (int j = 0; j < a.GetCols(); j++)
+			{
+				result(i, j) = a(i, j) + b(i, j);
+			}
+
+			return result;
+		}
 	}
 
 	Matrix operator*(const Matrix& a, const Matrix& b)
 	{
-		return Matrix(a.getRows(), a.getCols()); // TEMP.
+		if (a.GetCols() != b.GetRows())
+		{
+			throw runtime_error("Matrix dimensions do NOT match for multiplication.");
+		}
+
+		Matrix result(a.GetRows(), b.GetCols());
+		for (int i = 0; i < a.GetRows(); i++)
+		{
+			for (int j = 0; j < b.GetCols(); j++)
+			{
+				for (int k = 0; k < a.GetCols(); k++)
+				{
+					result(i, j) += a(i, k) * b(k, j);
+				}
+			}
+			return result;
+		}
 	}
 
 

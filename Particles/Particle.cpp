@@ -24,10 +24,10 @@ void Particle::unitTests()
     cout << "Testing RotationMatrix constructor...";
     double theta = M_PI / 4.0;
     RotationMatrix r(M_PI / 4);
-    if (r.getRows() == 2 && r.getCols() == 2 && almostEqual(r(0, 0), cos(theta))
-        && almostEqual(r(0, 1), -sin(theta))
-        && almostEqual(r(1, 0), sin(theta))
-        && almostEqual(r(1, 1), cos(theta)))
+    if (r.GetRows() == 2 && r.GetCols() == 2 && almostEqual(r(0, 0), cos(theta))
+    && almostEqual(r(0, 1), -sin(theta))
+    && almostEqual(r(1, 0), sin(theta))
+    && almostEqual(r(1, 1), cos(theta)))
     {
         cout << "Passed.  +1" << endl;
         score++;
@@ -39,11 +39,10 @@ void Particle::unitTests()
 
     cout << "Testing ScalingMatrix constructor...";
     ScalingMatrix s(1.5);
-    if (s.getRows() == 2 && s.getCols() == 2
-        && almostEqual(s(0, 0), 1.5)
-        && almostEqual(s(0, 1), 0)
-        && almostEqual(s(1, 0), 0)
-        && almostEqual(s(1, 1), 1.5))
+    if (s.GetRows() == 2 && s.GetCols() == 2 && almostEqual(s(0, 0), 1.5)
+    && almostEqual(s(0, 1), 0)
+    && almostEqual(s(1, 0), 0)
+    && almostEqual(s(1, 1), 1.5))
     {
         cout << "Passed.  +1" << endl;
         score++;
@@ -55,9 +54,8 @@ void Particle::unitTests()
 
     cout << "Testing TranslationMatrix constructor...";
     TranslationMatrix t(5, -5, 3);
-    if (t.getRows() == 2 && t.getCols() == 3
-        && almostEqual(t(0, 0), 5)
-        && almostEqual(t(1, 0), -5)
+    if (t.GetRows() == 2 && t.GetCols() == 3 && almostEqual(t(0, 0), 5) 
+        && almostEqual(t(1, 0), -5) 
         && almostEqual(t(0, 1), 5)
         && almostEqual(t(1, 1), -5)
         && almostEqual(t(0, 2), 5)
@@ -70,7 +68,6 @@ void Particle::unitTests()
     {
         cout << "Failed." << endl;
     }
-
 
     cout << "Testing Particles..." << endl;
     cout << "Testing Particle mapping to Cartesian origin..." << endl;
@@ -88,7 +85,8 @@ void Particle::unitTests()
     Matrix initialCoords = m_A;
     rotate(M_PI / 2.0);
     bool rotationPassed = true;
-    for (int j = 0; j < initialCoords.getCols(); j++)
+
+    for (int j = 0; j < initialCoords.GetCols(); j++)
     {
         if (!almostEqual(m_A(0, j), -initialCoords(1, j)) || !almostEqual(m_A(1, j), initialCoords(0, j)))
         {
@@ -97,6 +95,7 @@ void Particle::unitTests()
             rotationPassed = false;
         }
     }
+
     if (rotationPassed)
     {
         cout << "Passed.  +1" << endl;
@@ -111,7 +110,8 @@ void Particle::unitTests()
     initialCoords = m_A;
     scale(0.5);
     bool scalePassed = true;
-    for (int j = 0; j < initialCoords.getCols(); j++)
+
+    for (int j = 0; j < initialCoords.GetCols(); j++)
     {
         if (!almostEqual(m_A(0, j), 0.5 * initialCoords(0, j)) || !almostEqual(m_A(1, j), 0.5 * initialCoords(1, j)))
         {
@@ -120,6 +120,7 @@ void Particle::unitTests()
             scalePassed = false;
         }
     }
+
     if (scalePassed)
     {
         cout << "Passed.  +1" << endl;
@@ -134,7 +135,8 @@ void Particle::unitTests()
     initialCoords = m_A;
     translate(10, 5);
     bool translatePassed = true;
-    for (int j = 0; j < initialCoords.getCols(); j++)
+
+    for (int j = 0; j < initialCoords.GetCols(); j++)
     {
         if (!almostEqual(m_A(0, j), 10 + initialCoords(0, j)) || !almostEqual(m_A(1, j), 5 + initialCoords(1, j)))
         {
@@ -143,6 +145,7 @@ void Particle::unitTests()
             translatePassed = false;
         }
     }
+
     if (translatePassed)
     {
         cout << "Passed.  +1" << endl;
