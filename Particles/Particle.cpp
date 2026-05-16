@@ -258,7 +258,7 @@ void Particle::unitTests()
     cout << "Score: " << score << " / 7" << endl;
 }
 
-bool Particle::IsOffScreen()
+bool Particle::IsOffScreen() const
 {
     Vector2u size = m_engine->GetWindow().getSize();
     Vector2f center = this->GetCenter();

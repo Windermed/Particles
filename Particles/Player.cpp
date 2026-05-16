@@ -42,7 +42,7 @@ void Player::SetPlayerMode(PlayerMode playerMode)
 	{
 		m_velocityY = 0.0f;
 		m_bIsGrounded = false;
-		m_jumpHeld = false;
+		m_bIsJumpHeld = false;
 	}
 	m_playerMode = playerMode;
 
@@ -50,13 +50,16 @@ void Player::SetPlayerMode(PlayerMode playerMode)
 	{
 	case PlayerMode::Red:
 		m_playerSprite.setTexture(m_playerTexture);
+		m_playerSprite.setRotation(0.0f);
 		break;
 
 	case PlayerMode::Blue:
 		m_playerSprite.setTexture(m_playerTexture_blue);
+		m_playerSprite.setRotation(0.0f);
 		break;
 	case PlayerMode::Yellow:
 		m_playerSprite.setTexture(m_playerTexture_yellow);
+		m_playerSprite.setRotation(180.0f);
 		break;
 
 	default:
@@ -109,6 +112,31 @@ float Player::GetGravityAcceleration() const
 	}
 }
 
+void Player::UpdateBullets(float dt)
+{
+	vector<PlayerBullet>::iterator it = m_bullets.begin();
+	while (it != m_bullets.end())
+	{
+		if (it->IsOffScreen())
+		{
+			it = m_bullets.erase(it);
+		}
+		else
+		{
+			it->Update(dt);
+			++it;
+		}
+	}
+}
+
+void Player::DrawBullets(RenderWindow& window)
+{
+	for (PlayerBullet& b : m_bullets)
+	{
+		b.Draw(window);
+	}
+}
+
 void Player::HandleInput(float dt)
 {
 	Keyboard EventPress;
@@ -121,14 +149,16 @@ void Player::HandleInput(float dt)
 	// ensures that the player cant hold jump if blue to fly.
 	if (!bJumpKeyHeld)
 	{
-		m_jumpHeld = false;
+		m_bIsJumpHeld = false;
 	}
 
 
 
 	if (m_playerMode == PlayerMode::Red || m_playerMode == PlayerMode::Yellow)
 	{
-		// normal movement. 
+		// Track movement direction for bullet firing
+		Vector2f dir(0.0f, 0.0f);
+
 		if (Keyboard::isKeyPressed(Keyboard::W) || Keyboard::isKeyPressed(Keyboard::Up))
 		{
 			m_position.y -= currentSpeed * dt; // 240 fps monitor does not like 60.0f.
@@ -149,11 +179,25 @@ void Player::HandleInput(float dt)
 			m_position.x += currentSpeed * dt; //(1.0f / 60.0f)
 		}
 
+
 		if (m_playerMode == PlayerMode::Yellow)
 		{
-			if (Keyboard::isKeyPressed(Keyboard::Z))
+			bool bIsZPressed = Keyboard::isKeyPressed(Keyboard::Z);
+
+			if (bIsZPressed && !m_fireHeld)
 			{
 				//@ TODO: remake the shooting ability.
+
+				Vector2f spawnPos = m_position;
+				spawnPos.y += 20.0f; // offset to bottom of sprite.
+
+				m_bullets.push_back(PlayerBullet(spawnPos, m_moveDirection));
+				m_fireHeld = true;
+			}
+			
+			if (!bIsZPressed)
+			{
+				m_fireHeld = false;
 			}
 		}
 
@@ -171,11 +215,11 @@ void Player::HandleInput(float dt)
 		// jump only when we are grounded.
 		if (Keyboard::isKeyPressed(Keyboard::W) || Keyboard::isKeyPressed(Keyboard::Up) || Keyboard::isKeyPressed(Keyboard::Space))
 		{
-			if (bJumpKeyHeld && !m_jumpHeld && m_bIsGrounded)
+			if (bJumpKeyHeld && !m_bIsJumpHeld && m_bIsGrounded)
 			{
 				m_velocityY = m_jumpForce;
 				m_bIsGrounded = false;
-				m_jumpHeld = true;
+				m_bIsJumpHeld = true;
 			}
 			
 		}
