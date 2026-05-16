@@ -32,12 +32,13 @@ Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosit
 
     for (int j = 0; j < numPoints; j++)
     {
-        float r = (float)(rand() % 61 + 20);
+        float r = (float)(rand() % 80 + 20);
+
         float dx = r * cos(theta);
         float dy = r * sin(theta);
 
-        this->m_A(0, j) = m_centerCoordinate.x + dx;
-        this->m_A(1, j) = m_centerCoordinate.y + dy;
+        m_A(0, j) = m_centerCoordinate.x + dx;
+        m_A(1, j) = m_centerCoordinate.y + dy;
 
         theta += dTheta;
     }
@@ -48,20 +49,29 @@ void Particle::draw(RenderTarget& target, RenderStates states) const
 {
     VertexArray lines(TriangleFan, m_numPoints + 1);
 
-    // maps the center coords to pixel space.
-    Vector2f center = (Vector2f)target.mapCoordsToPixel(m_centerCoordinate, m_cartesianPlane);
+    // Build transform: convert Cartesian to pixel coords
+    // pixel_x = Cartesian_x + W/2
+    // pixel_y = H/2 - Cartesian_y
+    Vector2u size = target.getSize();
+    Transform transform;
+    transform.translate(size.x / 2.0f, size.y / 2.0f);
+    transform.scale(1.0f, -1.0f);
+    states.transform = transform;
 
-    lines[0].position = center;
+    // Use Cartesian coordinates directly
+    lines[0].position = m_centerCoordinate;
     lines[0].color = m_color1;
 
     for (int j = 1; j <= m_numPoints; j++)
     {
-        Vector2f coord((float)m_A(0, j - 1), (float)m_A(1, j - 1));
-        lines[j].position = (Vector2f)target.mapCoordsToPixel(coord, m_cartesianPlane);
-        lines[j].color = m_color2;
+        
+        lines[j].position = Vector2f((float)m_A(0, j - 1), (float)m_A(1, j - 1));
+
+        float ratio = m_ttl / TTL;
+        lines[j].color = Color((Uint8)(m_color2.r * ratio), (Uint8)(m_color2.g * ratio), (Uint8)(m_color2.b * ratio));
     }
 
-    target.draw(lines);
+    target.draw(lines, states);
 }
 
 void Particle::Update(float dt)
@@ -71,7 +81,7 @@ void Particle::Update(float dt)
     scale(SCALE);
 
     float dx = m_vx * dt;
-    m_vy -= 0 * dt;
+    m_vy -= G * dt; // you can also set to 0 for zero gravity.
     float dy = m_vy * dt;
 
     translate(dx, dy);
@@ -249,6 +259,6 @@ void Particle::translate(double xShift, double yShift)
     TranslationMatrix T(xShift, yShift, m_numPoints);
     this->m_A = T + m_A;
 
-    m_centerCoordinate.x + -(float)xShift;
+    m_centerCoordinate.x += (float)xShift;
     m_centerCoordinate.y += (float)yShift;
 }

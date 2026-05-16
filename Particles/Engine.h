@@ -56,4 +56,6 @@ private:
 	/* Vector for particles. */
 	vector<Particle> m_particles;
 
+	bool m_showText = false; // EXPERIMENTAL.
+
 };
