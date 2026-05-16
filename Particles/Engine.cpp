@@ -1,4 +1,6 @@
 #include "Engine.h"
+#include "Player.h"
+
 
 // because the compiler needs it.
 Engine* Engine::EngineInstance = nullptr;
@@ -8,16 +10,13 @@ Engine::Engine()
 	// locking it to 1080p as its annoying to work on a widescreen monitor.
 	m_Window.create(VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Particles", Style::Default);
 
-	// (EXTRA) MENU
+	m_Player = new Player(); // we will need to use a pointer for our player.
 
 	m_menuText.setString("Press 1 - Particles\nPress 2 - TBD");
 	// center menu text.
 	m_showText = true;
 	FloatRect bounds = m_menuText.getLocalBounds();
 	m_menuText.CenterText(bounds);
-
-
-
 
 }
 
@@ -43,6 +42,11 @@ void Engine::Run()
 		this->Draw();
 	}
 
+}
+
+Player& Engine::GetPlayer()
+{
+	return *m_Player; // since we are using the ACTUAL player, we need to return a reference and not a copy.
 }
 
 void Engine::Input()
@@ -81,9 +85,11 @@ void Engine::Input()
 					m_gameState = GameState::Particles;
 				}
 
+				// our new game state!
 				if (event.key.code == Keyboard::Num2)
 				{
 					m_gameState = GameState::Other;
+					//m_Player = new Player();
 				}
 			}
 
@@ -127,11 +133,16 @@ void Engine::Update(float dtAsSeconds)
 	Vector2u size = m_Window.getSize();
 	vector<Particle>::iterator it = m_particles.begin();
 
+	if (m_gameState == GameState::Other)
+	{
+		m_Player->Update(dtAsSeconds);
+	}
+
 	while (it != m_particles.end())
 	{
 		// offscreen check.
 		
-		if (it->getTTL() > 0.0 && !it->IsOffScreen()) //
+		if (it->getTTL() > 0.0 && !it->IsOffScreen())
 		{
 			it->Update(dtAsSeconds);
 			++it;
@@ -174,6 +185,7 @@ void Engine::Draw()
 	else if (m_gameState == GameState::Other)
 	{
 		// TODO: DECIDE.
+		m_Player->Draw(m_Window);
 	}
 
 	

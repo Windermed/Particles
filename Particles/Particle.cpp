@@ -63,7 +63,7 @@ void Particle::draw(RenderTarget& target, RenderStates states) const
     lines[0].color = m_color1;
 
     // assigns each outer vertex its cartesian position from m_A and applies the particle's secondary color.
-    for (int j = 1; j <= m_numPoints; j++)
+    for(int j = 1; j <= m_numPoints; j++)
     {
         
         lines[j].position = Vector2f((float)m_A(0, j - 1), (float)m_A(1, j - 1));

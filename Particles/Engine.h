@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include "Particle.h"
 #include "GameText.h"
+#include "Player.h"
 
 using namespace sf;
 using namespace std;
@@ -75,6 +76,9 @@ public:
 	/* Getter of Current Window */
 	RenderWindow& GetWindow() { return m_Window; };
 
+	/* Returns our Player object. */
+	Player& GetPlayer();
+
 	
 
 private:
@@ -102,6 +106,9 @@ private:
 	GameText m_menuText;
 
 	Font m_Font;
+
+	// PLAYER.
+	Player* m_Player;
 
 	/* A regular RenderWindow */
 	RenderWindow m_Window;
