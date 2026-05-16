@@ -177,7 +177,11 @@ void Engine::Input()
 
 				case Keyboard::LShift:
 					GetPlayer().SetSpeed(160.0f);
-				
+					break;
+
+				case Keyboard::Tab:
+					m_Player->CyclePlayerMode();
+					break;
 				default:
 					break;
 				}
@@ -257,22 +261,38 @@ void Engine::Update(float dtAsSeconds)
 			bool expired = it->getTTL() <= 0.0f;
 
 			// Check for collision with player.
-			if (m_Player->CheckHit(it->GetCenter(), it->GetBoundingRadius()))
-			{
-				m_Player->LoseLife();
-				m_flashing = true;
-				m_flashTimer = 0.0f;
-				m_Player->ResetPosition();
-				it = m_particles.erase(it);
 
-				if (m_Player->GetLives() <= 0)
+			// if red player mode.
+			if (m_Player->GetPlayerMode() == PlayerMode::Red)
+			{
+				if (!m_Player->IsGodMode())
 				{
-					m_GameState = GameState::GameOver;
-					m_Spawner.Reset();
-					m_particles.clear();
-					break;
+					if (m_Player->CheckHit(it->GetCenter(), it->GetBoundingRadius()))
+					{
+						m_Player->LoseLife();
+						m_flashing = true;
+						m_flashTimer = 0.0f;
+						m_Player->ResetPosition();
+						it = m_particles.erase(it);
+
+						if (m_Player->GetLives() <= 0)
+						{
+							m_GameState = GameState::GameOver;
+							m_Spawner.Reset();
+							m_particles.clear();
+							break;
+						}
+						continue;
+					}
 				}
-				continue;
+				
+			}
+
+			else if (m_Player->GetPlayerMode() == PlayerMode::Blue)
+			{
+				// collision is the floor - todo: allow damage from particles.
+				// (its 4am i am too tired)
+
 			}
 
 			if (!expired && !offScreen)

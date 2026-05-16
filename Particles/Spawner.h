@@ -17,9 +17,9 @@ public:
 
 private:
 	float m_SpawnTimer = 0.0f;
-	float m_SpawnInterval = 0.8f; // bullet cooldown.
+	float m_SpawnInterval = 0.2f; // bullet cooldown.
 	int m_SpawnCount = 0;
-	int m_maxSpawns = 20; // total particles within pattern.
+	int m_maxSpawns = 114; // total particles within pattern.
 
 	float m_bulletSpeed = -1000.0f; 
 	vector<int> m_spawnX; // fixed x positions.
