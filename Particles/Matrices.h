@@ -11,104 +11,134 @@ namespace Matrices
     class Matrix
     {
         public:
-            ///Construct a matrix of the specified size.
-            ///Initialize each element to 0.
+            
+            /* Construct a matrix of the specified size. */
+            /* Initialize each element to 0. */
             Matrix(int _rows, int _cols);
 
             ///************************************
             ///inline accessors / mutators, these are done:
 
-            ///Read element at row i, column j
-            ///usage:  double x = a(i,j);
+            /* Read element at row i, column j */
+            /* @usage:  double x = a(i, j) */
             const double& operator()(int i, int j) const
             {
                 return a.at(i).at(j);
             }
 
-            ///Assign element at row i, column j
-            ///usage:  a(i,j) = x;
+            /* Assign element at row i, column j */
+            /* @usage:  a(i, j) = x; */
             double& operator()(int i, int j)
             {
                 return a.at(i).at(j);
             }
 
+            /* Gets rows. */
             int getRows() const{return rows;}
+
+            /* Gets cols. */
             int getCols() const{return cols;}
-            ///************************************
+
+            
         protected:
-            ///changed to protected so sublasses can modify
+            /* adjusted to protected so subclasses may modify. */
             vector<vector<double>> a;
         private:
             int rows;
             int cols;
     };
 
-    ///Add each corresponding element.
-    ///usage:  c = a + b;
+    /* Adds each corresponding element. */
+    /* @usage:  c = a + b; */
     Matrix operator+(const Matrix& a, const Matrix& b);
 
-    ///Matrix multiply.  See description.
-    ///usage:  c = a * b;
+    /* Matrix multiply. */
+    /* @usage:  c = a * b; */
     Matrix operator*(const Matrix& a, const Matrix& b);
 
-    ///Matrix comparison.  See description.
-    ///usage:  a == b
+    /* Matrix comparison.See description. */
+    /* @usage:  a == b */
     bool operator==(const Matrix& a, const Matrix& b);
 
-    ///Matrix comparison.  See description.
-    ///usage:  a != b
+    /* Matrix comparison.See description. */
+    /* @usage:  a != b */
     bool operator!=(const Matrix& a, const Matrix& b);
 
-    ///Output matrix.
-    ///Separate columns by ' ' and rows by '\n'
+    /* Output Matrix. */
+    /* Separate columns by ' ' and rows by '\n' */
     ostream& operator<<(ostream& os, const Matrix& a);
 
     /*******************************************************************************/
 
-    ///2D rotation matrix
-    ///usage:  A = R * A rotates A theta radians counter-clockwise
+    /**
+    * @brief A 2D rotation matrix.
+    *
+    * @code
+    * A = R * a;
+    * @endcode
+    * rotates A theta radians counter - clockwise
+    */
     class RotationMatrix : public Matrix
     {
         public:
-            ///Call the parent constructor to create a 2x2 matrix
-            ///Then assign each element as follows:
-            /*
-            cos(theta)  -sin(theta)
-            sin(theta)   cos(theta)
+            /**
+            * @brief Constructs a 2x2 counter-clocwise rotation matrix.
+            * Then assign each element as follows:
+            * @code
+            * [cos(theta)  -sin(theta)]
+            * [sin(theta)   cos(theta)]
+            * @endcode
+            *
+            * @param theta represents the angle of rotation in radians, counter-clockwise
             */
-            ///theta represents the angle of rotation in radians, counter-clockwise
             RotationMatrix(double theta);
     };
 
-    ///2D scaling matrix
-    ///usage:  A = S * A expands or contracts A by the specified scaling factor
+    /**
+    * @brief A 2D rotation matrix.
+    * 
+    * @code
+    * A = S * A; // Expands or contracts A by the specified scaling factor.
+    * @endcode
+    */
     class ScalingMatrix : public Matrix
     {
         public:
-            ///Call the parent constructor to create a 2x2 matrix
-            ///Then assign each element as follows:
-            /*
-            scale   0
-            0       scale
+            /**
+            /* @brief Call the parent constructor to create a 2x2 matrix
+            /* Then assign each element as follows:
+            /* @code
+            /* [scale 0]
+            /* [0       scale]
+            * @endcode
+            * 
+            * @param scale the size multipler.
             */
-            ///scale represents the size multiplier
             ScalingMatrix(double scale);
     };
 
-    ///2D Translation matrix
-    ///usage:  A = T + A will shift all coordinates of A by (xShift, yShift)
+    /**
+    * @brief A 2D Translation matrix.
+    *
+    * @code
+    * A = T + A; // will shift all coordinates of A by (xShift, yShift)
+    * @endcode
+    */
     class TranslationMatrix : public Matrix
     {
         public:
-            ///Call the parent constructor to create a 2xn matrix
-            ///Then assign each element as follows:
-            /*
-            xShift  xShift  xShift  ...
-            yShift  yShift  yShift  ...
+            /**
+            * @brief Call the parent constructor to create a 2xn matrix
+            * Then assign each element as follows:
+            *
+            * [xShift  xShift  xShift  ...]
+            * [yShift  yShift  yShift  ...]
+            * @endcode
+            *
+            * paramaters are xShift, yShift, and nCols
+            * nCols represents the number of columns in the matrix
+            * where each column contains one (x,y) coordinate pair,
             */
-            ///paramaters are xShift, yShift, and nCols
-            ///nCols represents the number of columns in the matrix
-            ///where each column contains one (x,y) coordinate pair
             TranslationMatrix(double xShift, double yShift, int nCols);
     };
 }
