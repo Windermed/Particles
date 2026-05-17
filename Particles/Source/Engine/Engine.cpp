@@ -1,6 +1,6 @@
 #include "Engine.h"
-#include "Player.h"
-#include "SoundManager.h"
+#include "Player/Player.h"
+#include "Sounds/SoundManager.h"
 
 
 // because the compiler needs it.

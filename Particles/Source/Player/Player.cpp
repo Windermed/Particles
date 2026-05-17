@@ -1,6 +1,6 @@
 #include "Player.h"
 #include "Engine.h"
-#include "SoundManager.h"
+#include "Sounds/SoundManager.h"
 
 Player::Player()
 {

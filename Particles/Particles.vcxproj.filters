@@ -1,78 +1,96 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{D4725FCA-AD7C-46BE-9D22-96ACB3EF4666}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Bullet">
+      <UniqueIdentifier>{2D70A93C-862E-4CF3-BB33-CA3F55C22A37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core">
+      <UniqueIdentifier>{C8256858-CD63-4BF3-A198-BDC8402EC787}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine">
+      <UniqueIdentifier>{BDBF60BA-7346-4865-A5E0-9E4496724968}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Particle">
+      <UniqueIdentifier>{EA3512BB-9A8D-4455-9831-73BEDE0011A0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Player">
+      <UniqueIdentifier>{E0F885EA-D193-4DED-A2AF-C9F837C1FCB9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Sounds">
+      <UniqueIdentifier>{8AB784EC-E334-46F2-A8FD-12671B76F10A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\UI">
+      <UniqueIdentifier>{949D9642-E03B-40F9-BC09-8AC480E98EE1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+      <UniqueIdentifier>{A18EB5BA-CAE4-4289-B132-202097B33A0A}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+      <UniqueIdentifier>{542ED871-EF4A-462E-BF27-E9DBAAF532DF}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Particle.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Engine\Engine.cpp">
+      <Filter>Source\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\UI\GameText.cpp">
+      <Filter>Source\UI</Filter>
     </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\main.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Matrices.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Particle\Matrices.cpp">
+      <Filter>Source\Particle</Filter>
     </ClCompile>
-    <ClCompile Include="GameText.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Particle\Particle.cpp">
+      <Filter>Source\Particle</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Player\Player.cpp">
+      <Filter>Source\Player</Filter>
     </ClCompile>
-    <ClCompile Include="Spawner.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Bullet\PlayerBullet.cpp">
+      <Filter>Source\Bullet</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerBullet.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Sounds\SoundManager.cpp">
+      <Filter>Source\Sounds</Filter>
     </ClCompile>
-    <ClCompile Include="SoundManager.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Bullet\Spawner.cpp">
+      <Filter>Source\Bullet</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Particle.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Source\Core\Constants.h">
+      <Filter>Source\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Source\Engine\Engine.h">
+      <Filter>Source\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Matrices.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Source\UI\GameText.h">
+      <Filter>Source\UI</Filter>
     </ClInclude>
-    <ClInclude Include="GameText.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Source\Particle\Matrices.h">
+      <Filter>Source\Particle</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Source\Core\Object.h">
+      <Filter>Source\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Spawner.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Source\Particle\Particle.h">
+      <Filter>Source\Particle</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerBullet.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Source\Player\Player.h">
+      <Filter>Source\Player</Filter>
     </ClInclude>
-    <ClInclude Include="Constants.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Source\Bullet\PlayerBullet.h">
+      <Filter>Source\Bullet</Filter>
     </ClInclude>
-    <ClInclude Include="Object.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Source\Sounds\SoundManager.h">
+      <Filter>Source\Sounds</Filter>
     </ClInclude>
-    <ClInclude Include="SoundManager.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Source\Bullet\Spawner.h">
+      <Filter>Source\Bullet</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -2,10 +2,10 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Constants.h"
-#include "Particle.h"
-#include "GameText.h"
-#include "Player.h"
-#include "Spawner.h"
+#include "Particle/Particle.h"
+#include "UI/GameText.h"
+#include "Player/Player.h"
+#include "Bullet/Spawner.h"
 
 using namespace sf;
 using namespace std;
