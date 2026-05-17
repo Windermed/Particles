@@ -5,7 +5,7 @@ SpiralBulletSpawner::SpiralBulletSpawner()
 {
 	// allows it to spawn faster.
 	m_SpawnInterval = 0.05f;
-
+	m_bUseDurationOnly  = true;
 	m_totalDuration = 10.0f;
 	m_bulletSpeed = 300.0f;
 	m_minPoints = 20;
@@ -14,17 +14,27 @@ SpiralBulletSpawner::SpiralBulletSpawner()
 
 void SpiralBulletSpawner::Update(float dt, RenderWindow& window, vector<Particle>& particles)
 {
+
+	m_bHasStarted = true;
+
 	// rotate angle every frame regardless of what the spawn timer is set.
 	m_spiralAngle += m_spiralSpeed * dt;
 	if (m_spiralAngle  >= 360.0f)
 	{
 		m_spiralAngle -= 360.0f;
 	}
-	
-	if (!ShouldSpawn(dt)) return; // whether or not we spawn.
+
+	// updates the spiral to move via center.
+	if (m_bIsSpiralMoving)
+	{
+		m_moveTimer += dt;
+		m_centerOffsetX = sin(m_moveTimer * m_moveSpeed) * m_moveRange;
+	}
+
+	if (!ShouldSpawn(dt)) return;
 
 	// screen center in our pixel space.
-	float centerX = SCREEN_WIDTH / 2.0f;
+	float centerX = SCREEN_WIDTH / 2.0f + m_centerOffsetX;
 	float centerY = SCREEN_HEIGHT / 2.0f;
 
 	// spawns one particle per arm
@@ -51,9 +61,6 @@ void SpiralBulletSpawner::Update(float dt, RenderWindow& window, vector<Particle
 		float velY = -(sin(angleRad) * m_bulletSpeed);
 
 		p.SetVelocity(velX, velY);
-		p.SetScaling(false);
-		p.ToggleGravity(false);
-
 		particles.push_back(p);
 		m_SpawnCount++;
 	}
@@ -69,4 +76,6 @@ void SpiralBulletSpawner::Reset()
 {
 	ResetBaseSettings();
 	m_spiralAngle = 0.0f;
+	m_moveTimer = 0.0f;
+	m_centerOffsetX = 0.0f;
 }

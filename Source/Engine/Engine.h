@@ -25,12 +25,6 @@ enum class GameState
 	None = 3
 };
 
-enum class BulletPattern
-{
-	Rain = 0,
-	Spiral = 1
-};
-
 class Engine
 {
 public:
@@ -49,9 +43,6 @@ public:
 
 	/* Returns our Player object. */
 	Player& GetPlayer();
-
-	/* Updates the Particles */
-	void UpdateParticles(float dtAsSeconds);
 
 	/* Initializes the Engine instance. */
 	static void Init()
@@ -110,6 +101,8 @@ private:
 	void UpdateFlashTimer(float dt);
 	void UpdateParticleBulletCollision(float dt);
 	void UpdateParticlePlayerCollision();
+	void UpdateAttackNameText();
+
 
 	// keybinds for certain menus
 	void InputMenu();
@@ -117,19 +110,33 @@ private:
 	void InputBulletHell();
 
 	// draw functions of certain function.
-	void DrawMenu() { m_Window.draw(m_menuText); }
+	void DrawMenu()
+	{
+		//draw our particles first so that way the text can render on top of it.
+		for (const Particle& p : m_particles)
+			m_Window.draw(p);
+
+		m_Window.draw(m_menuTitle);
+		m_Window.draw(m_menuDesc);
+		m_Window.draw(m_menuOptions);
+	}
 
 	void DrawParticles();
 	void DrawBulletHell();
 	void DrawGameState();
 
+	void ToggleCollisionDebug();
+
 
 public:
-	/* EXTRA: Engine Flags */
+	/* Engine Flags */
 
 	bool m_showText = false; // displays text on screen.
 	bool m_showDebugText = false; // displays text on screen.
 	bool m_bIsZeroGravityOn = false; // toggle for zero gravity.
+
+	/* DEBUGGING */
+	bool m_bShowCollision = false;
 
 private:
 	
@@ -138,7 +145,7 @@ private:
 
 	/* GameMode Engine */
 	GameMode m_gameMode = GameMode::Menu;
-	GameState m_GameState = GameState::None;
+	GameState m_GameState = GameState::Playing;
 	
 
 	/* A regular RenderWindow */
@@ -154,11 +161,24 @@ private:
 	BaseBulletSpawner* m_activeSpawner = nullptr;
 
 	/* HUD */
-	GameText m_menuText;
+	GameText m_menuTitle;
+	GameText m_menuDesc;
+	GameText m_menuOptions;
+
 	GameText m_debugText;
 	GameText m_livesText;
+
 	GameText m_winText;
+	GameText m_winPrompt;
 	GameText m_gameOverText;
+	GameText m_gameOverPrompt;
+
+
+	GameText m_attackNameText;
+
+	/* MENU */
+	float m_menuSpawnTimer = 0.0f;
+	float m_menuSpawnInterval = 0.11f;
 
 	/* Input */
 	Keyboard::Key m_lastKeyPressed = Keyboard::Unknown;
@@ -168,5 +188,7 @@ private:
 	float m_flashTimer = 0.0f;
 	float m_flashDuration = 0.3f;
 	bool m_bIsflashing = false;
+
+	
 
 };

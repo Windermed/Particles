@@ -16,6 +16,8 @@ public:
 
     const char* GetName() const override { return "CombinedAttack"; }
 
+public:
+
     BaseBulletSpawner& GetRainPattern() { return m_rain; }; // should probably move the rain pattern to another class.
     SpiralBulletSpawner& GetSpiralPattern() { return m_spiral; }
 

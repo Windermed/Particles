@@ -2,14 +2,22 @@
 
 Bullet_AttackTest::Bullet_AttackTest()
 {
-	// nerf the rain a bit
-	m_rain.SetSpawnInterval(1.2f);
-	m_rain.SetMaxSpawns(15);
+	// for this attack, we'll test out phases.
+	m_rain.SetPhaseMode(true);
 
-	// 
-	m_spiral.SetSpiralSpeed(90.0f);
-	m_spiral.SetSpiralArms(2);
-	m_spiral.SetDuration(12.0f);
+	// for phase 1, let's allow bullets to fall down for 4 seconds.
+	m_rain.AddPhase(SpawnDirection::FromTop, 4.0f, 0.8);
+
+	// then after that, let's fire off bullets from the left for 4 seconds in Phase 2.
+	m_rain.AddPhase(SpawnDirection::FromLeft, 4.0f, 0.6f);
+
+	// from phase 3, we fire off bullets from the right faster for 3 seconds.
+	m_rain.AddPhase(SpawnDirection::FromRight, 3.0f, 0.4f);
+
+	// and lastly in phase 4, bullets will fall off even faster.
+	m_rain.AddPhase(SpawnDirection::FromTop, 3.0f, 0.2f);
+
+	m_rain.SetDuration(14.0f);
 }
 
 void Bullet_AttackTest::Update(float dt, RenderWindow& window, vector<Particle>& particles)

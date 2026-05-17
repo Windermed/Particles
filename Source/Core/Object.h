@@ -18,5 +18,11 @@ public:
 	virtual bool IsAlive() const { return GetTTL() > 0.0f && !IsOffScreen(); }
 
 	virtual const char* GetName() const { return "Object"; }
+
+	void SetShowCollision(bool show) { m_bShowCollision = show; }
+	bool IsShowingCollision() const { return m_bShowCollision; }
+
+protected:
+	bool m_bShowCollision = false;
 };
 

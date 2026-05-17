@@ -134,8 +134,24 @@ void Player::DrawBullets(RenderWindow& window)
 	}
 }
 
+void Player::StartMoveToCenter()
+{
+	m_bIsMovingToCenter = true;
+	m_moveTarget = Vector2f(960.0f, 540.0f);
+	
+	// to avoid the possibility of the blue soul falling down
+	// we'll reset the velocity and grounded bool.
+	m_velocityY = 0.0f;
+	m_bIsGrounded = false;
+	m_bHasReachedCenter = false;
+}
+
 void Player::HandleInput(float dt)
 {
+
+	// checks if we've reached the center. if so, player character related input is disabled.
+	if (m_bHasReachedCenter) return;
+
 	Keyboard EventPress;
 
 	bool bShiftHeld = Keyboard::isKeyPressed(Keyboard::LShift) || Keyboard::isKeyPressed(Keyboard::RShift);
@@ -159,22 +175,34 @@ void Player::HandleInput(float dt)
 		if (Keyboard::isKeyPressed(Keyboard::W) || Keyboard::isKeyPressed(Keyboard::Up))
 		{
 			m_position.y -= currentSpeed * dt; // 240 fps monitor does not like 60.0f.
+			dir.y = -1.0f;
 		}
 
 		if (Keyboard::isKeyPressed(Keyboard::A) || Keyboard::isKeyPressed(Keyboard::Left))
 		{
 			m_position.x -= currentSpeed * dt;
+			dir.x = -1.0f;
 		}
 
 		if (Keyboard::isKeyPressed(Keyboard::S) || Keyboard::isKeyPressed(Keyboard::Down))
 		{
 			m_position.y += currentSpeed * dt;
+			dir.y = 1.0f;
 		}
 
 		if (Keyboard::isKeyPressed(Keyboard::D) || Keyboard::isKeyPressed(Keyboard::Right))
 		{
 			m_position.x += currentSpeed * dt; //(1.0f / 60.0f)
+			dir.x = 1.0f;
 		}
+
+		/* // if we ever wanna do directional player bullets.
+		if (dir.x != 0.0f || dir.y != 0.0f)
+		{
+			float len = sqrt(dir.x * dir.x + dir.y * dir.y);
+			m_moveDirection = dir / len;
+		}
+		*/
 
 
 		if (m_playerMode == PlayerMode::Yellow)
@@ -206,7 +234,7 @@ void Player::HandleInput(float dt)
 
 		
 	}
-	else if (m_playerMode == PlayerMode::Blue)
+	else if (m_playerMode == PlayerMode::Blue && !m_bIsMovingToCenter)
 	{
 		// horizontal movement
 		float currentSpeed = bShiftHeld ? m_ShiftSpeed : m_PlayerSpeed;
@@ -261,6 +289,7 @@ bool Player::CheckHit(Vector2f particleCenter, float particleRadius) const
 void Player::ResetPlayer()
 {
 	m_lives = 3;
+	m_bHasReachedCenter = false;
 	ResetPosition();
 }
 
@@ -271,11 +300,31 @@ Vector2f Player::GetCartesianPosition() const
 
 void Player::Update(float dt)
 {
+	// if we're moving to the center via other means then skip normal input.
+	if (m_bIsMovingToCenter)
+	{
+		// larp toward our target. slows down as it gets closer
+		m_position = Vector2f(m_position.x + (m_moveTarget.x - m_position.x) * 5.0f * dt, m_position.y + (m_moveTarget.y - m_position.y) * 5.0f * dt);
+
+		float distance = sqrt(pow(m_moveTarget.x - m_position.x, 2) +pow(m_moveTarget.y - m_position.y, 2));
+
+		if (distance < 5.0f)
+		{
+			m_position = m_moveTarget;
+			m_bIsMovingToCenter = false;
+			m_bHasReachedCenter = true;
+			m_velocityY = 0.0f;
+		}
+
+		m_playerSprite.setPosition(m_position);
+		return;
+	}
+
 	HandleInput(dt);
 	//m_shape.setPosition(m_position);
 
 	// checks to see if we're on blue soul mode.
-	if (m_playerMode == PlayerMode::Blue)
+	if (m_playerMode == PlayerMode::Blue && !m_bHasReachedCenter)
 	{
 		// dt handles framerate
 		m_velocityY += GetGravityAcceleration() * dt;
@@ -296,6 +345,31 @@ void Player::Update(float dt)
 		}
 	}
 
+	// Invincibility frames
+	if (m_bIsInvincible)
+	{
+		m_invincibleTimer += dt;
+		m_flashTimer += dt;
+
+		// Toggle sprite visibility on flash intervals.
+		if (m_flashTimer >= m_flashInterval)
+		{
+			m_bSpriteVisible = !m_bSpriteVisible;
+			m_flashTimer = 0.0f;
+		}
+
+		// ends the invincibility.
+		if (m_invincibleTimer >= m_invincibleDuration)
+		{
+			m_bIsInvincible = false;
+			m_invincibleTimer = 0.0f;
+			m_flashTimer = 0.0f;
+			// sets sprite visible when finished.
+			m_bSpriteVisible = true; 
+			m_playerSprite.SetOpacity(255);
+		}
+	}
+
 	m_playerSprite.setPosition(m_position);
 
 	// change color depending on player (soul) mode.
@@ -307,5 +381,22 @@ void Player::Update(float dt)
 void Player::Draw(RenderWindow& window)
 {
 	//window.draw(m_shape);
-	window.draw(m_playerSprite);
+	
+	// draws when visible. 
+	if (m_bSpriteVisible)
+		window.draw(m_playerSprite);
+
+	// if our collision flag is enabled.
+	if (m_bShowCollision) // debugging ESPECIALLY to investigate the attack demo.
+	{
+		CircleShape hitbox(m_hitRadius);
+		hitbox.setFillColor(Color(0, 255, 0, 80));
+		hitbox.setOutlineColor(Color::Green);
+		hitbox.setOutlineThickness(1.0f);
+		hitbox.setOrigin(m_hitRadius, m_hitRadius);
+		
+		Vector2f cartPos = GetCartesianPosition();
+		hitbox.setPosition(cartPos.x + 960.0f, 540.0f - cartPos.y);
+		window.draw(hitbox);
+	}
 }

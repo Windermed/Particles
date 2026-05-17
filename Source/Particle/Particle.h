@@ -29,12 +29,12 @@ public:
     const char* GetName() const override { return "Particle"; }
 
 public:
-
-    // getters
-    float getTTL() { return m_ttl; }
     Vector2f GetCenter() const { return m_centerCoordinate; }
     float GetBoundingRadius() const;
+    // Returns velocity, not Y position
     float GetParticleY() { return m_vy; };
+
+    float GetVelocityY() const { return m_vy; }
 
     // setters
     void SetVelocity(float vx, float vy) { m_vx = vx; m_vy = vy; };

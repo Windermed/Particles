@@ -28,16 +28,29 @@ public:
 	// if you want to do the same as above but configure the font size.
 	GameText(String text, Vector2f position, unsigned int fontSize, Color color);
 
+	// if you want to set text but want to disregard the position.
+	GameText(String text, unsigned int fontSize, Color color, bool bIsTextCentered);
+
 	// if you too, want to do the same as above but also center the text.
 	GameText(String text, Vector2f position, unsigned int fontSize, Color color, bool bIsTextCentered);
+
+	
 
 public:
 
 	// center the text.
 	void CenterText(FloatRect bounds);
 
-	// Updates String and you can optionally re-center it.
-	void SetText(String text, bool bRecenterText = false);
+	// Updates String and you can optionally re center it.
+	//void SetText(String text, bool bRecenterText = false);
+
+	// centers horizontally at a specific Y
+	void CenterAtY(float y)
+	{
+		FloatRect bounds = getLocalBounds();
+		setOrigin(bounds.left + bounds.width / 2.0f, bounds.top + bounds.height / 2.0f);
+		setPosition(SCREEN_WIDTH / 2.0f, y);
+	}
 
 private:
 

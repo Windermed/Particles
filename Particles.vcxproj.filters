@@ -2,43 +2,43 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="source">
-      <UniqueIdentifier>{A7FBECDE-80C6-48BF-BF32-706DBCD8AFE3}</UniqueIdentifier>
+      <UniqueIdentifier>{65D6D6D4-89D8-41E1-9C10-A4024E54071A}</UniqueIdentifier>
     </Filter>
     <Filter Include="source\Bullet">
-      <UniqueIdentifier>{5D332C1D-6F59-4B54-94F8-44E7BFDB14ED}</UniqueIdentifier>
+      <UniqueIdentifier>{B8B58B92-C0E2-4394-9AED-EAEDE694C809}</UniqueIdentifier>
     </Filter>
     <Filter Include="source\Bullet\Attacks">
-      <UniqueIdentifier>{61CC5976-3B85-47A4-8DB5-02DA7C0A8409}</UniqueIdentifier>
+      <UniqueIdentifier>{94864171-6F32-4AFB-9A28-5DB17D0E40D2}</UniqueIdentifier>
     </Filter>
     <Filter Include="source\Bullet\Spawners">
-      <UniqueIdentifier>{8AE18381-B757-4D01-862C-62DD4AD199B5}</UniqueIdentifier>
+      <UniqueIdentifier>{956FED33-D58E-41BD-86EC-4B0EA9D443AD}</UniqueIdentifier>
     </Filter>
     <Filter Include="source\Core">
-      <UniqueIdentifier>{63B5554B-E089-465C-95B4-87285B8EE237}</UniqueIdentifier>
+      <UniqueIdentifier>{B0D4BE20-5224-4879-A233-0BCCD92559A1}</UniqueIdentifier>
     </Filter>
     <Filter Include="source\Engine">
-      <UniqueIdentifier>{2F69A9A9-0287-4BF6-8B78-989CDEE50AAA}</UniqueIdentifier>
+      <UniqueIdentifier>{CA5E090C-3D0B-4C2C-8846-D2DEFF83B4F4}</UniqueIdentifier>
     </Filter>
     <Filter Include="source\Particle">
-      <UniqueIdentifier>{BFECE343-4DD6-4266-B83F-5340D1FEAB06}</UniqueIdentifier>
+      <UniqueIdentifier>{622FBDD4-0E6C-4A13-BE84-667F5D82058B}</UniqueIdentifier>
     </Filter>
     <Filter Include="source\Player">
-      <UniqueIdentifier>{D530892C-0C18-4425-A30C-A469766739D6}</UniqueIdentifier>
+      <UniqueIdentifier>{A5E1B3CC-0DBD-40AD-8F01-E418930B07EA}</UniqueIdentifier>
     </Filter>
     <Filter Include="source\Sounds">
-      <UniqueIdentifier>{31308A92-19E3-41A2-895E-6482D47C4C73}</UniqueIdentifier>
+      <UniqueIdentifier>{A4FE441C-6BAC-472C-B587-F36E76EC6F19}</UniqueIdentifier>
     </Filter>
     <Filter Include="source\Textures">
-      <UniqueIdentifier>{002C7261-DCC0-4E21-BFF0-6ACCBA8B198D}</UniqueIdentifier>
+      <UniqueIdentifier>{84796F50-6649-4E06-A570-E77BE582ACE3}</UniqueIdentifier>
     </Filter>
     <Filter Include="source\UI">
-      <UniqueIdentifier>{9736F43D-9EB9-437A-B920-50FBA912FEB9}</UniqueIdentifier>
+      <UniqueIdentifier>{9E5E0081-D747-4B76-A024-E1D69C142810}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{2A647EEE-5A9C-470E-A815-6DAF32103DCC}</UniqueIdentifier>
+      <UniqueIdentifier>{B1C67CAA-6B8C-468A-B6C9-29BE77461F78}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{BBD1070D-E46D-437F-8D7C-A868356DCC9F}</UniqueIdentifier>
+      <UniqueIdentifier>{C87D98C2-A768-4AA0-9C93-291298966A57}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -76,6 +76,9 @@
       <Filter>source\Bullet\Spawners</Filter>
     </ClCompile>
     <ClCompile Include="source\Bullet\Attacks\Bullet_AttackTest.cpp">
+      <Filter>source\Bullet\Attacks</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Bullet\Attacks\Bullet_AttackDemo.cpp">
       <Filter>source\Bullet\Attacks</Filter>
     </ClCompile>
   </ItemGroup>
@@ -117,6 +120,9 @@
       <Filter>source\Bullet\Spawners</Filter>
     </ClInclude>
     <ClInclude Include="source\Bullet\Attacks\Bullet_AttackTest.h">
+      <Filter>source\Bullet\Attacks</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Bullet\Attacks\Bullet_AttackDemo.h">
       <Filter>source\Bullet\Attacks</Filter>
     </ClInclude>
   </ItemGroup>

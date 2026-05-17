@@ -103,6 +103,7 @@ public:
 	{
 		float t = (sin(timer) + 1.0f) / 2.0f;
 		Uint8 val = (Uint8)(minOpacity + (maxOpacity - minOpacity) * t);
+		SetOpacity(val);
 	}
 
 	// our getters

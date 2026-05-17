@@ -164,7 +164,7 @@ xcopy /Y /E "$(ProjectDir)content\" "$(OutDir)content\"</Command>
     <ClCompile Include="source\Sounds\SoundManager.cpp" />
     <ClCompile Include="source\Bullet\BaseBulletSpawner.cpp" />
     <ClCompile Include="source\Textures\GameSprite.cpp" />
-  <ClCompile Include="source\Bullet\Spawners\SpiralBulletSpawner.cpp" /><ClCompile Include="source\Bullet\Attacks\Bullet_AttackTest.cpp" /></ItemGroup>
+  <ClCompile Include="source\Bullet\Spawners\SpiralBulletSpawner.cpp" /><ClCompile Include="source\Bullet\Attacks\Bullet_AttackTest.cpp" /><ClCompile Include="source\Bullet\Attacks\Bullet_AttackDemo.cpp" /></ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Core\Constants.h" />
     <ClInclude Include="source\Engine\Engine.h" />
@@ -177,7 +177,7 @@ xcopy /Y /E "$(ProjectDir)content\" "$(OutDir)content\"</Command>
     <ClInclude Include="source\Sounds\SoundManager.h" />
     <ClInclude Include="source\Bullet\BaseBulletSpawner.h" />
     <ClInclude Include="source\Textures\GameSprite.h" />
-  <ClInclude Include="source\Bullet\Spawners\SpiralBulletSpawner.h" /><ClInclude Include="source\Bullet\Attacks\Bullet_AttackTest.h" /></ItemGroup>
+  <ClInclude Include="source\Bullet\Spawners\SpiralBulletSpawner.h" /><ClInclude Include="source\Bullet\Attacks\Bullet_AttackTest.h" /><ClInclude Include="source\Bullet\Attacks\Bullet_AttackDemo.h" /></ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

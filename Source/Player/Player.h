@@ -66,6 +66,22 @@ public:
 	void DrawBullets(RenderWindow& window);
 	vector<PlayerBullet>& GetBullet() { return m_bullets; }
 
+	/* when player gets damaged. */
+	bool IsInvincible() const { return m_bIsInvincible; }
+
+	void TriggerInvincibility()
+	{
+		m_bIsInvincible = true;
+		m_invincibleTimer = 0.0f;
+		m_flashTimer = 0.0f;
+		m_bSpriteVisible = true;
+	}
+
+	/* For Game over/ win */ // maybe if we had battles too lmao
+	void StartMoveToCenter();
+	bool IsMovingToCenter() const { return m_bIsMovingToCenter; }
+
+
 
 private:
 
@@ -80,7 +96,7 @@ private:
 	// position and movement.
 	PlayerMode m_playerMode = PlayerMode::Red; // red by default.
 	Vector2f m_position;
-	float m_PlayerSpeed = 300.0f; // 120.0f is proper but for our purposes we might need to adjust it.
+	float m_PlayerSpeed = 420.0f; // 120.0f is proper but for our purposes we might need to adjust it.
 	float m_ShiftSpeed = 60.0f;
 
 	// lives and collision
@@ -104,6 +120,24 @@ private:
 	Vector2f m_moveDirection = Vector2f(0.0f, -1.0f);
 	bool m_fireHeld = false;
 
+	/* Invincibility frames */
+	bool m_bIsInvincible = false;
+	float m_invincibleTimer = 0.0f;
+
+	// how many frames it'll last.
+	float m_invincibleDuration = 2.0f;
+
+	// how fast our player's sprite will flash.
+	float m_flashInterval = 0.1f;
+	float m_flashTimer = 0.0f;
+	bool m_bSpriteVisible = true;
+
+	// FOR GAME OVER/WIN ONLY (for now?)
+	bool m_bIsMovingToCenter = false;
+	bool m_bHasReachedCenter = false;
+	Vector2f m_moveTarget = Vector2f(960.0f, 540.0f);
+	float m_moveToCenterSpeed = 300.0f;
+	
 	
 	/* DEPRECATED. player used to render shape. */
 	ConvexShape m_shape;

@@ -56,6 +56,14 @@ GameText::GameText(String text, Vector2f position, unsigned int fontSize, Color 
 	Init(text, position, fontSize, color);
 }
 
+// text + font size, text color, text is centered ahh constructor.
+GameText::GameText(String text, unsigned int fontSize, Color color, bool bIsTextCentered)
+{
+	Init(text, Vector2f(0, 0), fontSize, color);
+	if (bIsTextCentered)
+		CenterText(getLocalBounds());
+}
+
 // text + position (screen) + text size + text color + center text constructor.
 GameText::GameText(String text, Vector2f position, unsigned int fontSize, Color color, bool bIsTextCentered)
 {
@@ -65,6 +73,9 @@ GameText::GameText(String text, Vector2f position, unsigned int fontSize, Color 
 		CenterText(this->getLocalBounds());
 	}
 }
+
+
+
 
 // center text on screen 
 // (maybe i could make an enum that allows you to center the text anywhere? like left middle, up middle. idk.

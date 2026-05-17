@@ -25,13 +25,21 @@ public:
 	void SetSpiralArms(int arms) { m_spiralArms = arms; }
 
 	// How far apart each spiral arm is from each other.
-	void SetArmOffset(float offset) { m_armOffset = offset; }
+	void SetSpiralArmOffset(float offset) { m_armOffset = offset; }
 
 	// if you want both arms to be the same.
 	void SetArmsEvenly(int arms)
 	{
 		m_spiralArms = arms;
 		m_armOffset = 360.0f / arms;
+	}
+	
+	// enables the spiral center to move across the screen.
+	void SetSpiralMoving(bool moving, float range = 400.0f, float speed = 1.0f)
+	{
+		m_bIsSpiralMoving = moving;
+		m_moveRange = range;
+		m_moveSpeed = speed;
 	}
 
 protected:
@@ -53,7 +61,29 @@ protected:
 	// how far the arms are apart of each other.
 	float m_armOffset = 120.0f;
 
+
+	/** !==============================! */
+	/** !== SPIRAL MOVEMENT SETTINGS ==! */
+	/** !==============================! */
+
+	// allows for the spiral to move.
+	float m_bIsSpiralMoving = false;
+
+	// how far the spiral will move.
+	float m_moveRange = 400.0f;
+
+	// how fast the spiral moves
+	float m_moveSpeed = 1.0f;
+
+	// the center offset
+	float m_centerOffsetX = 0.0f;
+
+
+
 	// !=== DO NOT MODIFY ===!
 	// this gets updated every frame
 	float m_spiralAngle = 0.0f;
+
+	//this too, gets updated ever frame
+	float m_moveTimer = 0.0f;
 };

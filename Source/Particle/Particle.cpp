@@ -72,6 +72,26 @@ void Particle::draw(RenderTarget& target, RenderStates states) const
 
     // draw
     target.draw(lines, states);
+
+    // if we enable to show collision for particles.
+    if (m_bShowCollision) // please i need thissss. my collision is kinda homeless.
+    {
+        // build collision using ACTUAL vertex positions.
+        ConvexShape collision;
+        collision.setPointCount(m_numPoints);
+
+        for (int j = 0; j < m_numPoints; j++)
+        {
+            Vector2f coord((float)m_A(0, j), (float)m_A(1, j));
+            Vector2f pixel = (Vector2f)target.mapCoordsToPixel(coord, m_cartesianPlane);
+            collision.setPoint(j, pixel);
+        }
+
+        collision.setFillColor(Color(255, 0, 0, 60));
+        collision.setOutlineColor(Color::Red);
+        collision.setOutlineThickness(1.0f);
+        target.draw(collision);
+    }
 }
 
 void Particle::Update(float dt)
