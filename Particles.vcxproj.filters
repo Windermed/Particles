@@ -25,12 +25,6 @@
     <Filter Include="Source\UI">
       <UniqueIdentifier>{949D9642-E03B-40F9-BC09-8AC480E98EE1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{A18EB5BA-CAE4-4289-B132-202097B33A0A}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{542ED871-EF4A-462E-BF27-E9DBAAF532DF}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Engine\Engine.cpp">
