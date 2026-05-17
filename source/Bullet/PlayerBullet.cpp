@@ -1,5 +1,5 @@
 #include "PlayerBullet.h"
-
+#include <cmath>
 PlayerBullet::PlayerBullet(Vector2f position, Vector2f direction)
 {
 	m_position = position;
