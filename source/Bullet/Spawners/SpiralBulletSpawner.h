@@ -1,5 +1,5 @@
 #pragma once
-#include "Bullet/BaseBulletSpawner.h"
+#include "../BaseBulletSpawner.h"
 
 class SpiralBulletSpawner : public BaseBulletSpawner
 {

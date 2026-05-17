@@ -1,6 +1,6 @@
 #pragma once
-#include "Bullet/BaseBulletSpawner.h"
-#include "Bullet/Spawners/SpiralBulletSpawner.h"
+#include "../BaseBulletSpawner.h"
+#include "../Spawners/SpiralBulletSpawner.h"
 
 enum class AttackDemoPhase
 {
