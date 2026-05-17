@@ -1,6 +1,6 @@
 #include "GameText.h"
 #include "Engine.h"
-
+#include "Core/Constants.h"
 Font GameText::m_font;
 bool GameText::m_bIsFontLoaded = false;
 
@@ -10,7 +10,7 @@ void GameText::Init(String text, Vector2f position, unsigned int fontSize, Color
 	{
 		if (!m_font.loadFromFile(FONT_PATH))
 		{
-			Message("ERROR: GameText has failed to load Font: %s\n", FONT_PATH.c_str());
+			Message("ERROR: GameText has failed to load Font: " << FONT_PATH);
 			throw runtime_error("Font Initialization has failed! Ensure that the font is present/is valid and try again!");
 		}
 		m_bIsFontLoaded = true;
