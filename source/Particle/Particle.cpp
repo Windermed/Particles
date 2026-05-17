@@ -280,10 +280,12 @@ void Particle::unitTests()
 
 bool Particle::IsOffScreen() const
 {
-    Vector2u size = m_engine->GetWindow().getSize();
+    //Vector2u size = m_engine->GetWindow().getSize();
     Vector2f center = this->GetCenter();
+    float halfW = SCREEN_WIDTH / 2.0f;
+    float halfH = SCREEN_HEIGHT / 2.0f;
 
-    return center.x < -(size.x / 2.0f) || center.x >(size.x / 2.0f) || center.y < -(size.y / 2.0f) || center.y >(size.y / 2.0f);
+    return center.x < -(halfW + 100) || center.x >(halfW + 100) || center.y < -(halfH + 100) || center.y >(halfH + 100);
 }
 
 // returns the furthest vertex distance from center
