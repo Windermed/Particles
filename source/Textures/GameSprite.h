@@ -3,6 +3,7 @@
 #include "Constants.h"
 #include <string>
 #include <iostream>
+#include <cmath>
 
 using namespace sf;
 using namespace std;
