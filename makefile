@@ -5,17 +5,17 @@ TARGET  := Particles
 SRCS := $(shell find $(SRC_DIR) -name "*.cpp")
 OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 
-INCLUDES := -I$(SRC_DIR)\
-            -I$(SRC_DIR)/Core\
-            -I$(SRC_DIR)/Engine\
-            -I$(SRC_DIR)/Particle\
-            -I$(SRC_DIR)/Player\
-            -I$(SRC_DIR)/Bullet\
-            -I$(SRC_DIR)/Bullet/Spawners\
-            -I$(SRC_DIR)/Bullet/Attacks\
-            -I$(SRC_DIR)/Sounds\
-            -I$(SRC_DIR)/Textures\
-            -I$(SRC_DIR)/UI
+INCLUDES := -Isource \
+            -Isource/Core \
+            -Isource/Engine \
+            -Isource/Particle \
+            -Isource/Player \
+            -Isource/Bullet \
+            -Isource/Bullet/Spawners \
+            -Isource/Bullet/Attacks \
+            -Isource/Sounds \
+            -Isource/Textures \
+            -Isource/UI
 
 LDFLAGS  := -lsfml-graphics -lsfml-window -lsfml-system\
             -lsfml-audio -lsfml-network -lstdc++fs
