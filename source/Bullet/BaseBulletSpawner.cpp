@@ -46,9 +46,9 @@ void BaseBulletSpawner::Update(float dt, RenderWindow& window, vector<Particle>&
 		switch (m_spawnDirection)
 		{
 		case SpawnDirection::FromTop:
-			spawnPos = Vector2i(rand() % SCREEN_WIDTH, SCREEN_HEIGHT - 10); // randomized.
+			spawnPos = Vector2i(rand() % SCREEN_WIDTH, 10); // randomized.
 			velX = 0.0f;
-			velY = m_bulletSpeed;
+			velY = -m_bulletSpeed;
 			break;
 		case SpawnDirection::FromBottom:
 			spawnPos = Vector2i(rand() % SCREEN_WIDTH, SCREEN_HEIGHT - 10); // randomized.
@@ -63,7 +63,7 @@ void BaseBulletSpawner::Update(float dt, RenderWindow& window, vector<Particle>&
 			break;
 
 		case SpawnDirection::FromRight:
-			spawnPos = Vector2i(SCREEN_WIDTH - 10, m_spawnY[rand() % m_spawnY.size()]);
+			spawnPos = Vector2i(SCREEN_WIDTH - 10, rand() % SCREEN_HEIGHT);
 			velX = -m_bulletSpeed;
 			velY = 0.0f;
 			break;
@@ -72,6 +72,8 @@ void BaseBulletSpawner::Update(float dt, RenderWindow& window, vector<Particle>&
 		Particle p = MakeParticle(window, spawnPos);
 		p.SetVelocity(velX, velY);
 		particles.push_back(p);
+
+		Message("Dir: " << (int)m_spawnDirection << " SpawnPos: " << spawnPos.x << ", " << spawnPos.y << " Center: " << p.GetCenter().x << ", " << p.GetCenter().y << " OffScreen: " << p.IsOffScreen());
 		m_SpawnCount++;
 	}
 }
