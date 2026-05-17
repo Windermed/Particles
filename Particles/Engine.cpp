@@ -1,5 +1,6 @@
 #include "Engine.h"
 #include "Player.h"
+#include "SoundManager.h"
 
 
 // because the compiler needs it.
@@ -261,8 +262,10 @@ void Engine::UpdateParticleBulletCollision(float dt)
 
 			FloatRect particleRounds(px - m_particles[pi].GetBoundingRadius(), py - m_particles[pi].GetBoundingRadius(), m_particles[pi].GetBoundingRadius() * 2.0f, m_particles[pi].GetBoundingRadius() * 2.0f);
 
+			// if player bullet hits particle.
 			if (bullets[bi].GetBounds().intersects(particleRounds))
 			{
+				SoundManager::GetInstance().PlaySound("snd_bullet_hit_01.wav");
 				bulletsToRmove.push_back(bi);
 				particlesToRemove.push_back(pi);
 				break;
@@ -293,8 +296,11 @@ void Engine::UpdateParticlePlayerCollision()
 	vector<Particle>::iterator it = m_particles.begin();
 	while (it != m_particles.end())
 	{
-		if (m_Player->CheckHit(it->GetCenter(), it->GetBoundingRadius()))
+		// if player gets damaged by particle.
+		if (m_Player->CheckHit(it->GetCenter(), it->GetBoundingRadius())) 
 		{
+			// TODO: play a sound here.
+			//SoundManager::GetInstance().PlaySound("snd_something.wav");
 			m_Player->LoseLife(); // remove life.
 			m_bIsflashing = true;
 			m_flashTimer = 0.0f;

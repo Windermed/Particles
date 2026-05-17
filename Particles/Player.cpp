@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Engine.h"
+#include "SoundManager.h"
 
 Player::Player()
 {
@@ -186,13 +187,15 @@ void Player::HandleInput(float dt)
 
 			if (bIsZPressed && !m_fireHeld)
 			{
-				//@ TODO: remake the shooting ability.
+				
 
 				Vector2f spawnPos = m_position;
 				spawnPos.y += 20.0f; // offset to bottom of sprite.
 
 				m_bullets.push_back(PlayerBullet(spawnPos, m_moveDirection));
 				m_fireHeld = true;
+
+				SoundManager::GetInstance().PlaySound("snd_laser_fire_test_01.wav");
 			}
 			
 			if (!bIsZPressed)
