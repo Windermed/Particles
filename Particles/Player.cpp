@@ -20,9 +20,9 @@ Player::Player()
 		m_shape.setOrigin(0, 0);
 	*/
 
-	m_playerTexture.loadFromFile("spr_heart_red.png");
-	m_playerTexture_blue.loadFromFile("spr_heart_blue.png");
-	m_playerTexture_yellow.loadFromFile("spr_heart_yellow.png");
+	m_playerTexture.loadFromFile("content/textures/player/spr_heart_red.png");
+	m_playerTexture_blue.loadFromFile("content/textures/player/spr_heart_blue.png");
+	m_playerTexture_yellow.loadFromFile("content/textures/player/spr_heart_yellow.png");
 
 	this->SetPlayerMode(m_playerMode);
 

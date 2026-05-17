@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 
+
 using namespace sf;
 using namespace std;
 
@@ -18,7 +19,7 @@ public:
 
 	void PlaySound(const string& fileName);
 private:
-	SoundManager() {}
+	SoundManager();
 
 	map<string, SoundBuffer> m_buffers;
 	map<string, Sound> m_sounds;

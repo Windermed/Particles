@@ -17,6 +17,8 @@ Engine::Engine()
 	m_livesText = GameText("Lives: 3", Vector2f(20.0f, 20.0f), 36, Color::White, false);
 	m_flashOverlay.setSize(Vector2f(SCREEN_WIDTH, SCREEN_HEIGHT));
 	m_flashOverlay.setFillColor(Color(255, 0, 0, 120));
+
+	SoundManager::GetInstance();
 }
 
 void Engine::Run()

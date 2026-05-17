@@ -15,4 +15,4 @@ const int SCREEN_WIDTH = 1920;
 const int SCREEN_HEIGHT = 1080;
 
 // font path TODO: Playtest on Linux to see if we need to add macros depending on platform.
-const string FONT_PATH = "burbankbigcondensed_bold.otf";
+const string FONT_PATH = "content/fonts/burbankbigcondensed_bold.otf";
