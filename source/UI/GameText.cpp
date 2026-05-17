@@ -1,6 +1,7 @@
 #include "GameText.h"
 #include "Engine.h"
 #include "Core/Constants.h"
+
 Font GameText::m_font;
 bool GameText::m_bIsFontLoaded = false;
 

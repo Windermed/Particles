@@ -48,12 +48,19 @@ void BaseBulletSpawner::Update(float dt, RenderWindow& window, vector<Particle>&
 		case SpawnDirection::FromTop:
 			spawnPos = Vector2i(rand() % SCREEN_WIDTH, 10); // randomized
 			velX = 0.0f;
+#ifdef _WIN32
 			velY = -m_bulletSpeed;
+#else
+			velY = m_bulletSpeed;
+#endif
+			break;
 			break;
 		case SpawnDirection::FromBottom:
 			spawnPos = Vector2i(rand() % SCREEN_WIDTH, SCREEN_HEIGHT - 10); // randomized.
 			velX = 0.0f;
+#ifdef _WIN32
 			velY = m_bulletSpeed;
+#endif
 			break;
 
 		case SpawnDirection::FromLeft:
