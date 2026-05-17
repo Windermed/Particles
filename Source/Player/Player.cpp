@@ -19,24 +19,15 @@ Player::Player()
 		m_shape.setPosition(m_position);
 		m_shape.setOrigin(0, 0);
 	*/
+	m_playerSprite = GameSprite("content/textures/player/spr_heart_red.png", m_position); // default sprite
 
-	m_playerTexture.loadFromFile("content/textures/player/spr_heart_red.png");
-	m_playerTexture_blue.loadFromFile("content/textures/player/spr_heart_blue.png");
-	m_playerTexture_yellow.loadFromFile("content/textures/player/spr_heart_yellow.png");
-
-	this->SetPlayerMode(m_playerMode);
-
-	//m_playerSprite.setScale(0.05f, 0.05f); // scale the sprite down.
+	SetPlayerMode(m_playerMode);
 	m_playerSprite.setPosition(m_position);
 }
 
 void Player::SetPlayerMode(PlayerMode playerMode)
 {
-	// a guard just in case.
-	if (m_playerMode == PlayerMode::MAX)
-	{
-		return;
-	}
+
 
 	// reset blue mode physics.
 	if (m_playerMode == PlayerMode::Blue)
@@ -45,25 +36,28 @@ void Player::SetPlayerMode(PlayerMode playerMode)
 		m_bIsGrounded = false;
 		m_bIsJumpHeld = false;
 	}
+
 	m_playerMode = playerMode;
 
 	switch (m_playerMode)
 	{
 	case PlayerMode::Red:
-		m_playerSprite.setTexture(m_playerTexture);
+		m_playerSprite.Load("content/textures/player/spr_heart_red.png");
 		m_playerSprite.setRotation(0.0f);
 		break;
 
 	case PlayerMode::Blue:
-		m_playerSprite.setTexture(m_playerTexture_blue);
+		m_playerSprite.Load("content/textures/player/spr_heart_blue.png");
 		m_playerSprite.setRotation(0.0f);
 		break;
 	case PlayerMode::Yellow:
-		m_playerSprite.setTexture(m_playerTexture_yellow);
+		m_playerSprite.Load("content/textures/player/spr_heart_yellow.png");
 		m_playerSprite.setRotation(180.0f);
 		break;
 
 	default:
+		m_playerSprite.Load("content/textures/spr_placeholder.png");
+		m_playerSprite.setRotation(0.0f);
 		break;
 	}
 
@@ -82,6 +76,8 @@ void Player::CyclePlayerMode()
 	{
 		next = 0;
 	}
+
+	Message("Current Player Mode: " << current);
 
 	SetPlayerMode(static_cast<PlayerMode>(next));
 }

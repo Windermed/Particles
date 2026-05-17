@@ -1,6 +1,7 @@
 #pragma once
 #include "Object.h"
 #include "Bullet/PlayerBullet.h"
+#include "Textures/GameSprite.h"
 #include <vector>
 
 using namespace sf;
@@ -11,10 +12,10 @@ class Engine;
 // player modes.
 enum class PlayerMode
 {
-	Red = 1, // just regular free movement
-	Blue = 2, // enables gravity, activates floor  collision.
-	Yellow = 3, // gives free movement but also a shooting ability.
-	MAX = 4
+	Red = 0, // just regular free movement
+	Blue = 1, // enables gravity, activates floor  collision.
+	Yellow = 2, // gives free movement but also a shooting ability.
+	MAX = 3
 };
 
 // using code from my own project as a base.
@@ -74,15 +75,12 @@ private:
 private:
 
 	// sprites 
-	Sprite m_playerSprite;
-	Texture m_playerTexture;
-	Texture m_playerTexture_blue;
-	Texture m_playerTexture_yellow;
+	GameSprite m_playerSprite;
 
 	// position and movement.
-	PlayerMode m_playerMode = PlayerMode::Blue; // red by default.
+	PlayerMode m_playerMode = PlayerMode::Red; // red by default.
 	Vector2f m_position;
-	float m_PlayerSpeed = 190.0f; // 120.0f is proper but for our purposes we might need to adjust it.
+	float m_PlayerSpeed = 300.0f; // 120.0f is proper but for our purposes we might need to adjust it.
 	float m_ShiftSpeed = 60.0f;
 
 	// lives and collision

@@ -1,6 +1,8 @@
 #include "Engine.h"
 #include "Player/Player.h"
 #include "Sounds/SoundManager.h"
+#include "Bullet/Spawners/SpiralBulletSpawner.h"
+#include "Bullet/Attacks/Bullet_AttackTest.h"
 
 
 // because the compiler needs it.
@@ -8,15 +10,33 @@ Engine* Engine::EngineInstance = nullptr;
 
 Engine::Engine()
 {
+
 	// locking it to 1080p as its annoying to work on a widescreen monitor.
 	m_Window.create(VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Particles", Style::Default);
 	m_Player = new Player(); // we will need to use a pointer for our player.
+
+	// UI Setup.
 	m_menuText = GameText("Press 1 - Particles\nPress 2 - Bullet Hell", Vector2f(0, 0), 48, Color::White, true);
 	m_winText = GameText("YOU WIN!", Vector2f(0, 0), 96, Color::Green, true);
 	m_gameOverText = GameText("GAME OVER!", Vector2f(0, 0), 96, Color::Red, true);
-	m_livesText = GameText("Lives: 3", Vector2f(20.0f, 20.0f), 36, Color::White, false);
+	m_livesText = GameText("Lives: 67", Vector2f(20.0f, 20.0f), 36, Color::White, false);
 	m_flashOverlay.setSize(Vector2f(SCREEN_WIDTH, SCREEN_HEIGHT));
 	m_flashOverlay.setFillColor(Color(255, 0, 0, 120));
+
+
+
+
+	// setup the icon.
+	Image icon;
+	if (icon.loadFromFile(ICON_PATH))
+	{
+		m_Window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+	}
+
+	// setup the spawner to use default pattern use in base class
+	m_activeSpawner = new BaseBulletSpawner();
+
+	m_activeSpawner->SetInfinite(true);
 
 	SoundManager::GetInstance();
 }
@@ -127,7 +147,7 @@ void Engine::Update(float dtAsSeconds)
 
 		UpdateFlashTimer(dtAsSeconds);
 		m_Player->Update(dtAsSeconds);
-		m_Spawner.Update(dtAsSeconds, m_Window, m_particles);
+		m_activeSpawner->Update(dtAsSeconds, m_Window, m_particles);
 
 		if (m_Player->GetPlayerMode() == PlayerMode::Yellow)
 		{
@@ -141,7 +161,7 @@ void Engine::Update(float dtAsSeconds)
 
 		CleanupVector(m_particles, dtAsSeconds);
 
-		if (m_Spawner.IsPatternComplete() && m_particles.empty())
+		if (m_activeSpawner->IsPatternComplete() && m_particles.empty())
 		{
 			m_GameState == GameState::Win;
 		}
@@ -218,7 +238,7 @@ void Engine::SpawnParticleBurst(Vector2i position, int count)
 // resets everything for bullet hell
 void Engine::ResetBulletHell()
 {
-	m_Spawner.Reset();
+	m_activeSpawner->Reset();
 	m_particles.clear();
 	m_Player->ResetPlayer();
 	m_GameState = GameState::Playing;
@@ -276,17 +296,29 @@ void Engine::UpdateParticleBulletCollision(float dt)
 	}
 
 	sort(bulletsToRmove.rbegin(), bulletsToRmove.rend());
+	sort(particlesToRemove.rbegin(), particlesToRemove.rend());
 
+	// remove any duplicates before erasing
+	bulletsToRmove.erase(unique(bulletsToRmove.begin(), bulletsToRmove.end()), bulletsToRmove.end());
+	particlesToRemove.erase(unique(particlesToRemove.begin(), particlesToRemove.end()), particlesToRemove.end());
+
+	// erase bullets.
 	for (int i : bulletsToRmove)
 	{
-		bullets.erase(bullets.begin() + i);
-	}
+		if (i < (int)bullets.size())
+		{
+			bullets.erase(bullets.begin() + i);
+		}
+	}	
 
-	sort(particlesToRemove.rbegin(), particlesToRemove.rend());
+	// erase particles.
 	for (int i : particlesToRemove)
 	{
-		m_particles.erase(m_particles.begin() + i);
-	}
+		if (i < (int)m_particles.size())
+		{
+			m_particles.erase(m_particles.begin() + i);
+		}
+	}	
 }
 
 void Engine::UpdateParticlePlayerCollision()
@@ -301,8 +333,8 @@ void Engine::UpdateParticlePlayerCollision()
 		// if player gets damaged by particle.
 		if (m_Player->CheckHit(it->GetCenter(), it->GetBoundingRadius())) 
 		{
-			// TODO: play a sound here.
-			//SoundManager::GetInstance().PlaySound("snd_something.wav");
+			
+			SoundManager::GetInstance().PlaySound("snd_player_hurt_01.wav");
 			m_Player->LoseLife(); // remove life.
 			m_bIsflashing = true;
 			m_flashTimer = 0.0f;
@@ -312,12 +344,13 @@ void Engine::UpdateParticlePlayerCollision()
 			if (m_Player->GetLives() <= 0)
 			{
 				m_GameState = GameState::GameOver;
-				m_Spawner.Reset();
+				m_activeSpawner->Reset();
 				m_particles.clear();
 				return;
 			}
 			continue;
 		}
+
 		++it;
 	}
 }
@@ -373,6 +406,24 @@ void Engine::InputBulletHell()
 
 	case Keyboard::G: // toggles god mode (DEVELOPER ONLY)
 		m_Player->ToggleGodMode();
+		break;
+	case Keyboard::Num1: // temp
+		delete m_activeSpawner;
+		m_activeSpawner = new SpiralBulletSpawner();
+		m_activeSpawner->Reset();
+		m_particles.clear();
+		break;
+	case Keyboard::Num2:
+		delete m_activeSpawner;
+		m_activeSpawner = new BaseBulletSpawner();
+		m_activeSpawner->Reset();
+		m_particles.clear();
+		break;
+	case Keyboard::Num3:
+		delete m_activeSpawner;
+		m_activeSpawner = new Bullet_AttackTest();
+		m_activeSpawner->Reset();
+		m_particles.clear();
 		break;
 	default:
 		break;

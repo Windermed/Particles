@@ -5,24 +5,30 @@
 #include "Particle/Particle.h"
 #include "UI/GameText.h"
 #include "Player/Player.h"
-#include "Bullet/Spawner.h"
+#include "Bullet/BaseBulletSpawner.h"
 
 using namespace sf;
 using namespace std;
 
 enum class GameMode
 {
-	Menu = 1,
-	Particles = 2,
-	BulletHell = 3
+	Menu = 0,
+	Particles = 1,
+	BulletHell = 2
 };
 
 enum class GameState
 {
-	Win = 1,
-	GameOver = 2,
-	Playing = 3,
+	Win = 0,
+	GameOver = 1,
+	Playing = 2,
 	None = 3
+};
+
+enum class BulletPattern
+{
+	Rain = 0,
+	Spiral = 1
 };
 
 class Engine
@@ -145,7 +151,7 @@ private:
 	Player* m_Player;
 
 	/* Bullet Spawner */
-	Spawner m_Spawner;
+	BaseBulletSpawner* m_activeSpawner = nullptr;
 
 	/* HUD */
 	GameText m_menuText;

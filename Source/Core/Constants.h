@@ -16,3 +16,6 @@ const int SCREEN_HEIGHT = 1080;
 
 // font path TODO: Playtest on Linux to see if we need to add macros depending on platform.
 const string FONT_PATH = "content/fonts/burbankbigcondensed_bold.otf";
+
+// ICON PATH FOR PROGRAM
+const string ICON_PATH = "content/textures/spr_placeholder.png";

@@ -22,7 +22,7 @@ public:
 
 private:
 
-	RectangleShape m_shape; // deprecated, uses a sprite now.
+	RectangleShape m_shape;
 	Vector2f m_position;
 	Vector2f m_velocity;
 	float m_speed = 900.0f;
