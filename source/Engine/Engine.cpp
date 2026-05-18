@@ -11,6 +11,10 @@ Engine* Engine::EngineInstance = nullptr;
 
 Engine::Engine()
 {
+	Image icon;
+	float titleY = SCREEN_HEIGHT / 2.0f - 200.0f;
+	float subtitleY = SCREEN_HEIGHT / 2.0f - 100.0f;
+	std::string versionType = "ERROR"; // nvm prob not gonna do this so it doesnt break on linux.
 
 	// locking it to 1080p as its annoying to work on a widescreen monitor.
 	m_Window.create(VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Particles", Style::Default);
@@ -21,10 +25,16 @@ Engine::Engine()
 	// MENU
 	m_menuTitle = GameText("Particles", 96, Color::White, false);
 	m_menuDesc = GameText("Select the mode you want to try", 36, Color(200, 200, 200, 255), false);
-	m_menuOptions = GameText("[1] Particles\n\n[2] Bullet Hell",48, Color::White, false);
+	m_menuOptions = GameText("[1] Particles\n\n[2] Bullet Hell",48, Color::Green, false);
 	m_menuTitle.CenterAtY(SCREEN_HEIGHT / 2.0f - 200.0f);
 	m_menuDesc.CenterAtY(SCREEN_HEIGHT / 2.0f - 100.0f);
 	m_menuOptions.CenterAtY(SCREEN_HEIGHT / 2.0f + 50.0f);
+	
+	// lowkey feel like a skid writing this LMAOO
+	
+	//m_menuVersion = GameText("v1.0 | dev ", 24, Color(150, 150, 150, 255), false); // skids after making project styrofoam or whatever
+	m_menuVersion = GameText("windermed", 24, Color(150, 150, 150, 255), false); // skids after writing 1 line of code.
+	m_menuVersion.CenterAtY(SCREEN_HEIGHT - 40.0f);
 
 	// WIN TEXT
 	m_winText = GameText("YOU WIN!!!", 96, Color::Green, false);
@@ -65,9 +75,6 @@ Engine::Engine()
 	// PARTICLE TEXT.
 	m_ParticleText = GameText("Click anywhere to Spawn particles!\n\n Press Space to Toggle Zero Gravity.");
 	m_ParticleText.CenterAtY(SCREEN_HEIGHT - 110.0f);
-
-	// setup the icon.
-	Image icon;
 	if (icon.loadFromFile(ICON_PATH))
 	{
 		m_Window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
@@ -269,9 +276,17 @@ void Engine::Update(float dtAsSeconds)
 				m_Player->ClearBullets();
 				SoundManager::GetInstance().PlaySound("snd_win_01_temp.wav", 50.0f);
 
+				m_winText.setString("YOU WIN!!");
+				//m_winText.setCharacterSize(40);
+				m_winText.CenterAtY(SCREEN_HEIGHT / 2.0f - 200.0f);
+
+				//m_thankYouText.setString("              THANK YOU    \n\nFOR AN AMAZING SEMESTER!!");
+				//m_thankYouText.setCharacterSize(40);
+				//m_thankYouText.CenterAtY(SCREEN_HEIGHT / 2.0f + 240.0f);
+				// 
 				// win screen with final score.
 				m_winScoreText.setString("Final Score: " + to_string(m_score));
-				m_winScoreText.CenterAtY(SCREEN_HEIGHT / 2.0f + -130.0f);
+				m_winScoreText.CenterAtY(SCREEN_HEIGHT / 2.0f + -50.0f);
 
 				// update positioning on game over prompt.
 				m_winLosePrompt.CenterAtY(SCREEN_HEIGHT / 2.0f + 50.0f);
@@ -279,10 +294,6 @@ void Engine::Update(float dtAsSeconds)
 				// adjust the gauntlet mode text.
 				m_GauntletMenuText.setString("[E] Endurance Mode");
 				m_GauntletMenuText.CenterAtY(SCREEN_HEIGHT / 2.0f + 150.0f);
-
-				m_winText.setString("              THANK YOU    \n\nFOR AN AMAZING SEMESTER!!");
-				//m_winText.setCharacterSize(40);
-				m_winText.CenterAtY(SCREEN_HEIGHT / 2.0f - 200.0f);
 
 				//m_thankYouText.setString("              THANK YOU    \n\nFOR AN AMAZING SEMESTER!!");
 				//m_thankYouText.setCharacterSize(40);

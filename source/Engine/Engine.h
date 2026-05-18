@@ -158,6 +158,7 @@ private:
 		m_menuTitle.DrawText();
 		m_menuDesc.DrawText();
 		m_menuOptions.DrawText();
+		m_menuVersion.DrawText();
 
 		//m_Window.draw(m_menuTitle);
 		//m_Window.draw(m_menuDesc);
@@ -208,6 +209,7 @@ private:
 	GameText m_menuTitle;
 	GameText m_menuDesc;
 	GameText m_menuOptions;
+	GameText m_menuVersion;
 
 	GameText m_debugText;
 	GameText m_livesText;
@@ -244,6 +246,7 @@ private:
 	/* MENU */
 	float m_menuSpawnTimer = 0.0f;
 	float m_menuSpawnInterval = 0.11f;
+
 
 	/* Input */
 	Keyboard::Key m_lastKeyPressed = Keyboard::Unknown;
