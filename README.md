@@ -1,7 +1,7 @@
 # Particles
 
 a particle system and bullet hell game that was built using C++ and SFML. 
-the bullet hell section is heavily inspired by UT/DR
+the bullet hell section is heavily inspired by Undertale/Deltarune
 
 <img src="media/github_preview02.png">
 
