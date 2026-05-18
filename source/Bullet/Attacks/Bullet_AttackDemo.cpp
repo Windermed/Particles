@@ -1,16 +1,18 @@
 #include "Bullet_AttackDemo.h"
 #include "Engine.h"
+#include "Sounds/SoundManager.h"
 
 Bullet_AttackDemo::Bullet_AttackDemo()
 {
     // for phase 1 the bullets here will come right up from the bottom.
     m_SpawnerPhase1.SetDirection(SpawnDirection::FromBottom);
     m_SpawnerPhase1.SetSpawnInterval(0.6f);
-    m_SpawnerPhase1.SetBulletCount(5);
+    m_SpawnerPhase1.SetBulletCount(3);
     m_SpawnerPhase1.SetBulletSpeed(700.0f);
     m_SpawnerPhase1.SetMaxSpawns(9999);
     m_SpawnerPhase1.SetUseDurationOnly(true);
     m_SpawnerPhase1.SetDuration(15.0f);
+    m_SpawnerPhase1.SetBulletSound("snd_bullet_whoosh_01.wav", 60.0f);
     
 
     // Phase 1 left spawner. it activates after 5 seconds
@@ -19,14 +21,15 @@ Bullet_AttackDemo::Bullet_AttackDemo()
     m_SpawnerPhase1Left.SetBulletCount(2);
     m_SpawnerPhase1Left.SetMaxSpawns(9999);
     m_SpawnerPhase1Left.SetBulletSpeed(400.0f);
-    m_SpawnerPhase1Left.SetDuration(10.0f);
+    m_SpawnerPhase1Left.SetDuration(10.0f); // lasts 10 seconds.
     m_SpawnerPhase1Left.SetUseDurationOnly(true);
+    m_SpawnerPhase1Left.SetBulletSound("snd_bullet_whoosh_left_01.wav", 25.0f);
 
     // for Phase 2. bullets will come from the right side but on the floor.
     m_SpawnerPhase2.SetDirection(SpawnDirection::FromRight);
     m_SpawnerPhase2.SetSpawnInterval(0.7f);
     m_SpawnerPhase2.SetBulletSpeed(350.0f);
-    m_SpawnerPhase2.SetDuration(12.0f);  // lasts 12 seconds.
+    m_SpawnerPhase2.SetDuration(4.0f);  // lasts 15 seconds.
     m_SpawnerPhase2.SetMaxSpawns(9999);
     m_SpawnerPhase2.SetUseDurationOnly(true);
 
@@ -36,10 +39,12 @@ Bullet_AttackDemo::Bullet_AttackDemo()
     // for phase 3. bullets will fall down and player must shoot them.
     m_SpawnerPhase3.SetDirection(SpawnDirection::FromTop);
     m_SpawnerPhase3.SetSpawnInterval(0.1f);
+    m_SpawnerPhase3.SetBulletCount(4);
     m_SpawnerPhase3.SetMaxSpawns(9999);
     m_SpawnerPhase3.SetBulletSpeed(550.0f);
-    m_SpawnerPhase3.SetDuration(30.0f); // lasts 20 seconds.
+    m_SpawnerPhase3.SetDuration(30.0f); // lasts 30 seconds.
     m_SpawnerPhase3.SetProgressive(true);
+    m_SpawnerPhase3.SetBulletSound("snd_bullet_falling_01.wav", 40.0f);
     //m_SpawnerPhase3.SetMinSpawnInterval(0.2f);
     //m_SpawnerPhase3.SetAccelerationRate(0.03f);
 
@@ -52,6 +57,7 @@ Bullet_AttackDemo::Bullet_AttackDemo()
     m_SpawnerPhase4.SetBulletSpeed(300.0f);
     m_SpawnerPhase4.SetSpiralMoving(true, 500.0f, 0.8f);
     m_SpawnerPhase4.SetMaxSpawns(9999); // fuck it.
+    //m_SpawnerPhase4.SetBulletSound("snd_bullet_spiral_01.wav");
 
     // Start on phase 1
     TransitionToPhase(AttackDemoPhase::Phase1);
@@ -69,20 +75,26 @@ void Bullet_AttackDemo::TransitionToPhase(AttackDemoPhase phase)
         Message("Phase 1 starts now!")
         break;
     case AttackDemoPhase::Phase2:
+        Engine::GetEngine()->AddScore(110);
         player.SetPlayerMode(PlayerMode::Blue);
         Message("Phase 2 starts now!")
         break;
     case AttackDemoPhase::Phase3:
+        Engine::GetEngine()->AddScore(160);
         player.SetPlayerMode(PlayerMode::Yellow);
         Message("Phase 3 starts now!")
         break;
     case AttackDemoPhase::Phase4:
+        Engine::GetEngine()->AddScore(250);
         player.SetPlayerMode(PlayerMode::Red);
         Message("Phase 4 starts now!")
+        //SoundManager::GetInstance().PlaySound("snd_bullet_spiral_bg_01.wav", true);
         break;
     case AttackDemoPhase::Complete:
+        Engine::GetEngine()->AddScore(550);
         m_bIsComplete = true;
         Message("AttackDemo is complete!")
+        //SoundManager::GetInstance().StopSound("snd_bullet_spiral_bg_01.wav");
         break;
     }
 }

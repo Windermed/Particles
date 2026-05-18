@@ -81,6 +81,27 @@ public:
 		}
 	}
 
+	void AddScore(int points)
+	{
+		m_score += points;
+		if (m_score > m_highScore)
+		{
+			m_highScore = m_score;
+		}
+
+		m_scoreText.setString("Score: " + to_string(m_score));
+		m_highScoreText.setString("Best: " + to_string(m_highScore));
+
+		Message("Score: " << m_score << " High: " << m_highScore)
+	}
+
+	void ResetScore()
+	{
+		m_score = 0;
+		m_scoreText.setString("Score: 0");
+	}
+	int GetScore() const { return m_score; }
+
 
 private:
 
@@ -116,9 +137,13 @@ private:
 		for (const Particle& p : m_particles)
 			m_Window.draw(p);
 
-		m_Window.draw(m_menuTitle);
-		m_Window.draw(m_menuDesc);
-		m_Window.draw(m_menuOptions);
+		m_menuTitle.DrawText();
+		m_menuDesc.DrawText();
+		m_menuOptions.DrawText();
+
+		//m_Window.draw(m_menuTitle);
+		//m_Window.draw(m_menuDesc);
+		//m_Window.draw(m_menuOptions);
 	}
 
 	void DrawParticles();
@@ -173,8 +198,18 @@ private:
 	GameText m_gameOverText;
 	GameText m_gameOverPrompt;
 
+	GameText m_scoreText;
+	GameText m_highScoreText;
+	GameText m_winScoreText;
+
 
 	GameText m_attackNameText;
+
+
+	/* SCORE */
+	int m_score = 0;
+	int m_highScore = 0;
+
 
 	/* MENU */
 	float m_menuSpawnTimer = 0.0f;

@@ -38,8 +38,12 @@ public:
 
 public:
 
+	// just to simply things.
+	void DrawText();
+
 	// center the text.
 	void CenterText(FloatRect bounds);
+
 
 	// Updates String and you can optionally re center it.
 	//void SetText(String text, bool bRecenterText = false);

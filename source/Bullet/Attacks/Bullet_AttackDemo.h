@@ -24,8 +24,9 @@ public:
 
     const char* GetName() const override { return "Bullet_AttackDemo"; }
 
-private:
+public:
     void TransitionToPhase(AttackDemoPhase phase);
+private:
     bool IsCurrentPhaseComplete() const;
 
 

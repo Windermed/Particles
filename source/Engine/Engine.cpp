@@ -22,30 +22,37 @@ Engine::Engine()
 	m_menuTitle = GameText("Particles", 96, Color::White, false);
 	m_menuDesc = GameText("Select the mode you want to try", 36, Color(200, 200, 200, 255), false);
 	m_menuOptions = GameText("[1] Particles\n\n[2] Bullet Hell",48, Color::White, false);
-
 	m_menuTitle.CenterAtY(SCREEN_HEIGHT / 2.0f - 200.0f);
 	m_menuDesc.CenterAtY(SCREEN_HEIGHT / 2.0f - 100.0f);
 	m_menuOptions.CenterAtY(SCREEN_HEIGHT / 2.0f + 50.0f);
 
 	// WIN TEXT
 	m_winText = GameText("YOU WIN!!!", 96, Color::Green, false);
+	m_winScoreText = GameText("", 48, Color::Green, false);
 	m_winPrompt = GameText("[R]  Play Again		[M]  Main Menu", 36, Color::White, false);
+	m_winText.CenterAtY(SCREEN_HEIGHT / 2.0f - 200.0f);
+	m_winPrompt.CenterAtY(SCREEN_HEIGHT / 2.0f + 160.0f);
 
-	m_winText.CenterAtY(SCREEN_HEIGHT / 2.0f - 80.0f);
-	m_winPrompt.CenterAtY(SCREEN_HEIGHT / 2.0f + 40.0f);
-
-	// Game Over text
+	// GAME OVER TEXT
 	m_gameOverText = GameText("GAME OVER!", 96, Color::Red, false);
 	m_gameOverPrompt = GameText("[R]  Try Again 		   [M]  Main Menu", 36, Color::White, false);
-
 	m_gameOverText.CenterAtY(SCREEN_HEIGHT / 2.0f - 80.0f);
 	m_gameOverPrompt.CenterAtY(SCREEN_HEIGHT / 2.0f + 40.0f);
 
+	// SCORE TEXT
+	m_scoreText = GameText("Score: 0", 36, Color::White, false);
+	m_highScoreText = GameText("Best: 0", 36, Color::White, false);
+	m_scoreText.setPosition(20.0f, 20.0f);
+	m_highScoreText.setPosition(20.0f, 60.0f);
 
-	/* BULLET HELL HUD */
-	m_attackNameText = GameText("", 36, Color::Yellow, false);
-	m_attackNameText.setPosition(20.0f, 60.0f); // below lives text
+	// LIVES TEXT.
+	m_livesText = GameText("Lives: 3", 36, Color::White, false);
+	m_livesText.setPosition(20.0f, 100.0f);
 
+
+	/* BULLET HELL DEBUG HUD */
+	m_attackNameText = GameText("", 36, Color(255, 255, 0, 120), false);
+	m_attackNameText.CenterAtY(SCREEN_HEIGHT - 60.0f);
 
 	// setup the icon.
 	Image icon;
@@ -206,11 +213,16 @@ void Engine::Update(float dtAsSeconds)
 
 		CleanupVector(m_particles, dtAsSeconds);
 
-		if (m_activeSpawner->IsPatternComplete() && m_particles.empty())
+		if (m_activeSpawner->IsPatternComplete() && m_particles.empty() && m_GameState != GameState::Win)
 		{
 			m_GameState = GameState::Win;
 			m_Player->StartMoveToCenter();
-			SoundManager::GetInstance().PlaySound("snd_win_01_temp.wav");
+			m_Player->ClearBullets();
+			SoundManager::GetInstance().PlaySound("snd_win_01_temp.wav", 50.0f);
+
+			// win screen with final score.
+			m_winScoreText.setString("Final Score: " + to_string(m_score));
+			m_winScoreText.CenterAtY(SCREEN_HEIGHT / 2.0f + -115.0f);
 		}
 
 		// update the live HUD
@@ -272,6 +284,7 @@ void Engine::ResetBulletHell()
 	m_particles.clear();
 	m_Player->ResetPlayer();
 	m_GameState = GameState::Playing;
+	ResetScore();
 	UpdateAttackNameText();
 }
 
@@ -324,7 +337,9 @@ void Engine::UpdateParticleBulletCollision(float dt)
 			// if player bullet hits particle.
 			if (bullets[bi].GetBounds().intersects(particleRounds))
 			{
-				SoundManager::GetInstance().PlaySound("snd_bullet_hit_01.wav");
+				Message("projectile hit!");
+				SoundManager::GetInstance().PlaySound("snd_bullet_hit_01.wav", 15.0f);
+				AddScore(10); // let's add 10 for now.
 				bulletsToRmove.push_back(bi);
 				particlesToRemove.push_back(pi);
 				break;
@@ -377,7 +392,7 @@ void Engine::UpdateParticlePlayerCollision()
 				continue;
 			}
 			
-			SoundManager::GetInstance().PlaySound("snd_player_hurt_01.wav");
+			SoundManager::GetInstance().PlaySound("snd_player_hurt_01.wav", 40.0f);
 			m_Player->LoseLife(); // remove life.
 			m_Player->TriggerInvincibility();
 			//m_bIsflashing = true;
@@ -385,11 +400,13 @@ void Engine::UpdateParticlePlayerCollision()
 			//m_Player->ResetPosition();
 			it = m_particles.erase(it);
 
+			// when player's lives are at 0.
 			if (m_Player->GetLives() <= 0)
 			{
 				m_GameState = GameState::GameOver;
 				m_activeSpawner->Reset();
 				m_particles.clear();
+				m_Player->ClearBullets();
 				m_Player->StartMoveToCenter();
 				// play a game over sound (if we find one).
 				return;
@@ -404,7 +421,13 @@ void Engine::UpdateParticlePlayerCollision()
 void Engine::UpdateAttackNameText()
 {
 	if (m_activeSpawner)
+	{
 		m_attackNameText.setString(string("Current Attack: ") + m_activeSpawner->GetName());
+
+		// recenter text after we update
+		m_attackNameText.CenterAtY(SCREEN_HEIGHT - 60.0f);
+	}
+		
 }
 
 void Engine::InputMenu()
@@ -483,6 +506,13 @@ void Engine::InputBulletHell()
 	case Keyboard::F1: // PLEASE TELL ME THIS IS IT.
 		ToggleCollisionDebug();
 		break;
+	case Keyboard::F2:
+		if (auto* demo = dynamic_cast<Bullet_AttackDemo*>(m_activeSpawner))
+		{
+			demo->TransitionToPhase(AttackDemoPhase::Phase4);
+			m_particles.clear();
+		}
+		break;
 	default:
 		break;
 	}
@@ -507,6 +537,8 @@ void Engine::DrawBulletHell()
 	
 	m_Player->Draw(m_Window); // draw the player.
 	m_Player->DrawBullets(m_Window); // draw the player bullets if yellow mode is on.
+	m_Window.draw(m_scoreText);
+	m_Window.draw(m_highScoreText);
 	m_Window.draw(m_livesText);
 	m_Window.draw(m_attackNameText);
 
@@ -523,6 +555,7 @@ void Engine::DrawGameState()
 	{
 	case GameState::Win:
 		m_Window.draw(m_winText);
+		m_Window.draw(m_winScoreText);
 		m_Window.draw(m_winPrompt);
 		break;
 	case GameState::GameOver:

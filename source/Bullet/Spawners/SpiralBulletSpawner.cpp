@@ -1,5 +1,6 @@
 #include "SpiralBulletSpawner.h"
 #include "Engine.h"
+#include "Sounds/SoundManager.h"
 
 SpiralBulletSpawner::SpiralBulletSpawner()
 {
@@ -63,6 +64,12 @@ void SpiralBulletSpawner::Update(float dt, RenderWindow& window, vector<Particle
 		p.SetVelocity(velX, velY);
 		particles.push_back(p);
 		m_SpawnCount++;
+
+		// Play sound per particle spawn
+		if (!m_bulletSound.empty())
+			SoundManager::GetInstance().PlaySound(m_bulletSound);
+
+		SoundManager::GetInstance().PlaySoundPooled("snd_bullet_spiral_02.wav", 4.0f);
 	}
 }
 

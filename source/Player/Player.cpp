@@ -35,6 +35,7 @@ void Player::SetPlayerMode(PlayerMode playerMode)
 		m_velocityY = 0.0f;
 		m_bIsGrounded = false;
 		m_bIsJumpHeld = false;
+		m_bLandingInvincible = false;
 	}
 
 	m_playerMode = playerMode;
@@ -43,16 +44,18 @@ void Player::SetPlayerMode(PlayerMode playerMode)
 	{
 	case PlayerMode::Red:
 		m_playerSprite.Load("content/textures/player/spr_heart_red.png");
-		m_playerSprite.setRotation(0.0f);
+		m_playerSprite.setRotation(0.0f);	
 		break;
 
 	case PlayerMode::Blue:
 		m_playerSprite.Load("content/textures/player/spr_heart_blue.png");
 		m_playerSprite.setRotation(0.0f);
+		SoundManager::GetInstance().PlaySound("snd_falling_01.wav", 30.0f);
 		break;
 	case PlayerMode::Yellow:
 		m_playerSprite.Load("content/textures/player/spr_heart_yellow.png");
 		m_playerSprite.setRotation(180.0f);
+		SoundManager::GetInstance().PlaySound("snd_player_yellow_activate.wav", 30.0f);
 		break;
 
 	default:
@@ -219,7 +222,7 @@ void Player::HandleInput(float dt)
 				m_bullets.push_back(PlayerBullet(spawnPos, m_moveDirection));
 				m_fireHeld = true;
 
-				SoundManager::GetInstance().PlaySound("snd_laser_fire_test_01.wav");
+				SoundManager::GetInstance().PlaySound("snd_laser_fire_test_01.wav", 20.0f);
 			}
 			
 			if (!bIsZPressed)
@@ -290,6 +293,10 @@ void Player::ResetPlayer()
 {
 	m_lives = 3;
 	m_bHasReachedCenter = false;
+	m_bIsMovingToCenter = false;
+	m_bLandingInvincible = false;
+
+	ResetInputState();
 	ResetPosition();
 }
 
@@ -333,6 +340,13 @@ void Player::Update(float dt)
 		{
 			m_velocityY = m_terminalVelocity;
 		}
+		
+		// while the player is falling, let's grant invincibility.
+		if (m_velocityY > 0.0f && !m_bIsGrounded)
+		{
+			m_bLandingInvincible = true;
+		}
+
 
 		m_position.y += m_velocityY * dt;
 
@@ -342,6 +356,7 @@ void Player::Update(float dt)
 			m_position.y = m_floorY;
 			m_velocityY = 0.0f;
 			m_bIsGrounded = true;
+			m_bLandingInvincible = false;
 		}
 	}
 

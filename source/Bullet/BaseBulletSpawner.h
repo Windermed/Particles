@@ -135,6 +135,9 @@ public:
 	// set up how many bullets spawn per interval.
 	void SetBulletCount(int count) { m_BulletCount = count; }
 
+	// set up the sound that bullet will fire when used.
+	void SetBulletSound(const string& fileName, float volume = 100.0f) { m_bulletSound = fileName; m_bulletVolume = volume; }
+
 protected:
 
 
@@ -202,6 +205,12 @@ protected:
 
 	// This is the speed in which bullets will travel.
 	float m_bulletSpeed = 600.0f;
+
+	// the SFX for the bullet.
+	string m_bulletSound = "";
+
+	// volume for bullet sound.
+	float m_bulletVolume = 100.0f;
 
 	// The Maximum number of bullets that can spawn before the pattern is complete.
 	// It works alongside m_totalDuration.

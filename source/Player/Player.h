@@ -65,9 +65,10 @@ public:
 	void UpdateBullets(float dt);
 	void DrawBullets(RenderWindow& window);
 	vector<PlayerBullet>& GetBullet() { return m_bullets; }
+	void ClearBullets() { m_bullets.clear(); }
 
 	/* when player gets damaged. */
-	bool IsInvincible() const { return m_bIsInvincible; }
+	bool IsInvincible() const { return m_bIsInvincible || m_bLandingInvincible; }
 
 	void TriggerInvincibility()
 	{
@@ -82,6 +83,15 @@ public:
 	bool IsMovingToCenter() const { return m_bIsMovingToCenter; }
 
 
+	// inputs
+	void ResetInputState()
+	{
+		m_bInputLocked = false;
+		m_moveDirection = Vector2f(0.0f, -1.0f);
+		m_bIsJumpHeld = false;
+		m_fireHeld = false;
+		m_velocityY = 0.0f;
+	}
 
 private:
 
@@ -105,13 +115,14 @@ private:
 	bool m_bGodMode = true; // needed for debugging/testing.
 	
 
-	/* BLUE MODE PHYSICS */
+	/* BLUE MODE */
 	float m_velocityY = 0.0f;
 	float m_terminalVelocity = 480.0f;
 	float m_jumpForce = -600.0f; // tweak this if we find issues.
 	float m_floorY = 1000.0f; // pixel Y position of the floor.
 	bool m_bIsGrounded = false;
 	bool m_bIsJumpHeld = false;
+	bool m_bLandingInvincible = false;
 
 
 
@@ -138,6 +149,8 @@ private:
 	Vector2f m_moveTarget = Vector2f(960.0f, 540.0f);
 	float m_moveToCenterSpeed = 300.0f;
 	
+	// to address a rare bug where inputs get locked.
+	bool m_bInputLocked = false;
 	
 	/* DEPRECATED. player used to render shape. */
 	ConvexShape m_shape;

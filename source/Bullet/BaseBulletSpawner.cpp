@@ -1,5 +1,6 @@
 #include "BaseBulletSpawner.h"
 #include "Engine.h"
+#include "Sounds/SoundManager.h"
 
 BaseBulletSpawner::BaseBulletSpawner()
 {
@@ -33,9 +34,11 @@ void BaseBulletSpawner::Update(float dt, RenderWindow& window, vector<Particle>&
 		m_SpawnInterval = std::max(m_SpawnInterval, m_minSpawnInterval);
 	}
 
-	
+	if (!m_bulletSound.empty())
+		SoundManager::GetInstance().PlaySound(m_bulletSound, m_bulletVolume);
 
 	// spawn bullets per interval.
+
 	for (int i = 0; i < m_BulletCount; i++)
 	{
 		Vector2i spawnPos;

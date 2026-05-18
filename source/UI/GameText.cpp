@@ -16,8 +16,6 @@ void GameText::Init(String text, Vector2f position, unsigned int fontSize, Color
 		}
 		m_bIsFontLoaded = true;
 	}
-	
-
 	this->setFont(m_font);
 	this->setString(text);
 	this->setCharacterSize(fontSize);
@@ -76,7 +74,10 @@ GameText::GameText(String text, Vector2f position, unsigned int fontSize, Color 
 }
 
 
-
+void GameText::DrawText()
+{
+	Engine::GetEngine()->GetWindow().draw(*this);
+}
 
 // center text on screen 
 // (maybe i could make an enum that allows you to center the text anywhere? like left middle, up middle. idk.
