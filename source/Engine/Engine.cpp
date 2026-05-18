@@ -46,8 +46,12 @@ Engine::Engine()
 	m_highScoreText.setPosition(20.0f, 60.0f);
 
 	// LIVES TEXT.
-	m_livesText = GameText("Lives: 3", 36, Color::White, false);
+	m_livesText = GameText("HP: 3", 36, Color::White, false);
 	m_livesText.setPosition(20.0f, 100.0f);
+
+	// HINT TEXT.
+	m_hintText = GameText("Press Z to shoot!", 48, Color::Yellow, false);
+	m_hintText.CenterAtY(SCREEN_HEIGHT / 2.0f + 200.0f);
 
 
 	/* BULLET HELL DEBUG HUD */
@@ -61,16 +65,16 @@ Engine::Engine()
 		m_Window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 	}
 
-	// setup the spawner to use default pattern use in base class
+	// default attack when selecting bullet hell.
 	m_activeSpawner = new BaseBulletSpawner();
-
-	m_activeSpawner->SetInfinite(true);
+	//m_activeSpawner->SetInfinite(true);
 
 	SoundManager::GetInstance();
 }
 
 void Engine::Run()
 {
+
 	Clock clock; // initializing clock.
 
 	Message("Starting up Unit Tester..");
@@ -133,11 +137,10 @@ void Engine::Input()
 			//  key input for each specific mode
 			if (m_gameMode == GameMode::Menu)
 				InputMenu();
-
-			if (m_gameMode == GameMode::Particles)
+			else if (m_gameMode == GameMode::Particles)
 				InputParticles(event);
 
-			if (m_gameMode == GameMode::BulletHell)
+			else if (m_gameMode == GameMode::BulletHell)
 				InputBulletHell();
 		}
 
@@ -203,6 +206,12 @@ void Engine::Update(float dtAsSeconds)
 
 		if (m_Player->GetPlayerMode() == PlayerMode::Yellow)
 		{
+			m_hintText.UpdateFlash(dtAsSeconds);
+			
+			if (m_hintText.IsTextFlashing() && Keyboard::isKeyPressed(Keyboard::Z))
+			{
+				HideHint();
+			}
 			UpdateParticleBulletCollision(dtAsSeconds);
 		}
 
@@ -226,7 +235,7 @@ void Engine::Update(float dtAsSeconds)
 		}
 
 		// update the live HUD
-		m_livesText.setString("Lives: " + to_string(m_Player->GetLives()));
+		m_livesText.setString("HP: " + to_string(m_Player->GetLives()));
 	}
 	else
 	{
@@ -280,7 +289,11 @@ void Engine::SpawnParticleBurst(Vector2i position, int count)
 // resets everything for bullet hell
 void Engine::ResetBulletHell()
 {
+	/* DEFAULT */
+	delete m_activeSpawner;
+	m_activeSpawner = new Bullet_AttackDemo();
 	m_activeSpawner->Reset();
+	Message("Active spawner: " << m_activeSpawner->GetName())
 	m_particles.clear();
 	m_Player->ResetPlayer();
 	m_GameState = GameState::Playing;
@@ -291,6 +304,7 @@ void Engine::ResetBulletHell()
 // handle mode transitions
 void Engine::SetGameMode(GameMode gameMode)
 {
+	Message("SetGameMode: " << (int)gameMode)
 	m_gameMode = gameMode;
 	m_GameState = GameState::Playing;
 
@@ -337,9 +351,18 @@ void Engine::UpdateParticleBulletCollision(float dt)
 			// if player bullet hits particle.
 			if (bullets[bi].GetBounds().intersects(particleRounds))
 			{
-				Message("projectile hit!");
+				Message("successfully hit!");
+
+				// did we hit a rare bullet? 
+				int points = m_particles[pi].IsRareBullet() ? 50 : 10;
+				AddScore(points);
+
+				if (m_particles[pi].IsRareBullet())
+				{
+					Message("You shot a rare bullet!");
+				}
 				SoundManager::GetInstance().PlaySound("snd_bullet_hit_01.wav", 15.0f);
-				AddScore(10); // let's add 10 for now.
+				
 				bulletsToRmove.push_back(bi);
 				particlesToRemove.push_back(pi);
 				break;
@@ -537,13 +560,19 @@ void Engine::DrawBulletHell()
 	
 	m_Player->Draw(m_Window); // draw the player.
 	m_Player->DrawBullets(m_Window); // draw the player bullets if yellow mode is on.
-	m_Window.draw(m_scoreText);
-	m_Window.draw(m_highScoreText);
-	m_Window.draw(m_livesText);
-	m_Window.draw(m_attackNameText);
+
+	m_scoreText.DrawText();
+	m_highScoreText.DrawText();
+	m_livesText.DrawText();
+	m_attackNameText.DrawText();
 
 	if (m_bIsflashing) // if it's flashing, flash the screen.
 		m_Window.draw(m_flashOverlay);
+
+	if (m_GameState == GameState::Playing && m_hintText.IsTextFlashing())
+	{
+		m_hintText.DrawText();
+	}
 
 	// Draw game state on TOP of everything.
 	DrawGameState();
@@ -576,10 +605,15 @@ void Engine::ToggleCollisionDebug()
 
 	// Apply to all particles
 	for (Particle& p : m_particles)
+	{
 		p.SetShowCollision(m_bShowCollision);
+	}	
 
 	// Apply to bullets
 	for (PlayerBullet& b : m_Player->GetBullet())
+	{
 		b.SetShowCollision(m_bShowCollision);
+	}
+	
 }
 

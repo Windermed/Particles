@@ -14,6 +14,10 @@ using namespace std;
 const int SCREEN_WIDTH = 1920;
 const int SCREEN_HEIGHT = 1080;
 
+const int PLAYER_LIVES = 20;
+
+const int PLAYER_HP = 20; // if we have time maybe.
+
 // font path TODO: Playtest on Linux to see if we need to add macros depending on platform.
 const string FONT_PATH = "content/fonts/burbankbigcondensed_bold.otf";
 

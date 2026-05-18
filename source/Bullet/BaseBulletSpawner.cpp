@@ -74,10 +74,27 @@ void BaseBulletSpawner::Update(float dt, RenderWindow& window, vector<Particle>&
 
 		Particle p = MakeParticle(window, spawnPos);
 		p.SetVelocity(velX, velY);
+
+		if (m_bUseRareBullets)
+		{
+			// roll for a rare bullet.
+			float roll = (float)(rand() % 100) / 100.0f;
+			if (roll < m_rareBulletChance)
+			{
+				p.SetSprite(m_rareBulletSprite, m_rareBulletScale, m_rareBulletRotation);
+				p.SetRareBullet(true);
+				Message("RARE BULLET HAS BEEN SET!");
+			}
+		}
+
 		particles.push_back(p);
 
 		Message("Dir: " << (int)m_spawnDirection << " SpawnPos: " << spawnPos.x << ", " << spawnPos.y << " Center: " << p.GetCenter().x << ", " << p.GetCenter().y << " OffScreen: " << p.IsOffScreen());
+
+		
+
 		m_SpawnCount++;
+
 	}
 }
 

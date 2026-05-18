@@ -2,6 +2,8 @@
 #include "Engine.h"
 
 
+
+
 Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition, Engine* owningEngine) : m_A(2, numPoints), m_engine(owningEngine)
 {
     this->m_ttl = TTL;
@@ -48,6 +50,15 @@ Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosit
 
 void Particle::draw(RenderTarget& target, RenderStates states) const
 {
+
+    // if we're using sprites instead of a particle, draw it and return.
+    /* FOR EXTRA STUFF ONLY */
+    if (m_bUseSprite)
+    {
+        target.draw(m_sprite);
+        return;
+    }
+
     VertexArray lines(TriangleFan, m_numPoints + 1);
     
     // Maps Cartesian Coordinates to screen coords. it will then translate the origin to the center of screen
@@ -87,6 +98,8 @@ void Particle::draw(RenderTarget& target, RenderStates states) const
             collision.setPoint(j, pixel);
         }
 
+        
+
         collision.setFillColor(Color(255, 0, 0, 60));
         collision.setOutlineColor(Color::Red);
         collision.setOutlineThickness(1.0f);
@@ -98,6 +111,21 @@ void Particle::Update(float dt)
 {
     m_ttl -= dt;
     rotate(dt * m_radiansPerSec);
+
+    // if particle is using a sprite.
+    if (m_bUseSprite)
+    {
+        float dx = m_vx * dt;
+        float dy = m_vy * dt;
+        m_centerCoordinate.x += dx;
+        m_centerCoordinate.y += dy;
+
+        float px = m_centerCoordinate.x + 960.0f;
+        float py = 540.0f - m_centerCoordinate.y;
+        m_sprite.setPosition(px, py);
+        return;
+    }
+
 
     // checks to see if particle has scaling enabled.
     if (m_shouldScale)
@@ -292,6 +320,13 @@ bool Particle::IsOffScreen() const
 // which will essentially give us the particle's effective collision radius.
 float Particle::GetBoundingRadius() const
 {
+    // just so that the sprite's collision isn't awkwardly huge.
+    if (m_bUseSprite)
+    {
+        Vector2f size = m_sprite.GetSize();
+        return max(size.x, size.y) / 2.0f;
+    }
+
     float maxDist = 0.0f;
     for (int j = 0; j < m_numPoints; j++)
     {

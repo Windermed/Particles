@@ -109,10 +109,14 @@ private:
 	float m_PlayerSpeed = 420.0f; // 120.0f is proper but for our purposes we might need to adjust it.
 	float m_ShiftSpeed = 60.0f;
 
+	// player initilization
+	bool m_bIsPlayerInitialized = false;
+
+
 	// lives and collision
-	int m_lives = 3;
+	int m_lives = PLAYER_LIVES;
 	float m_hitRadius = 15.0f; // hitbox.
-	bool m_bGodMode = true; // needed for debugging/testing.
+	bool m_bGodMode = false; // needed for debugging/testing.
 	
 
 	/* BLUE MODE */
@@ -124,19 +128,21 @@ private:
 	bool m_bIsJumpHeld = false;
 	bool m_bLandingInvincible = false;
 
-
+	
 
 	/* YELLOW MODE SHOOTING */
 	vector<PlayerBullet> m_bullets;
 	Vector2f m_moveDirection = Vector2f(0.0f, -1.0f);
 	bool m_fireHeld = false;
+	bool m_bIsFiringBigShot = false; // hold to charge.
+
 
 	/* Invincibility frames */
 	bool m_bIsInvincible = false;
 	float m_invincibleTimer = 0.0f;
 
 	// how many frames it'll last.
-	float m_invincibleDuration = 2.0f;
+	float m_invincibleDuration = 1.0f;
 
 	// how fast our player's sprite will flash.
 	float m_flashInterval = 0.1f;

@@ -13,17 +13,18 @@ Bullet_AttackDemo::Bullet_AttackDemo()
     m_SpawnerPhase1.SetUseDurationOnly(true);
     m_SpawnerPhase1.SetDuration(15.0f);
     m_SpawnerPhase1.SetBulletSound("snd_bullet_whoosh_01.wav", 60.0f);
+    m_SpawnerPhase1.SetRareBullet("content/textures/spr_easteregg.png", 0.02f, 1.5f, 0.0f, 66);
     
 
     // Phase 1 left spawner. it activates after 5 seconds
-    m_SpawnerPhase1Left.SetDirection(SpawnDirection::FromLeft);
-    m_SpawnerPhase1Left.SetSpawnInterval(0.9f);
-    m_SpawnerPhase1Left.SetBulletCount(2);
-    m_SpawnerPhase1Left.SetMaxSpawns(9999);
-    m_SpawnerPhase1Left.SetBulletSpeed(400.0f);
-    m_SpawnerPhase1Left.SetDuration(10.0f); // lasts 10 seconds.
-    m_SpawnerPhase1Left.SetUseDurationOnly(true);
-    m_SpawnerPhase1Left.SetBulletSound("snd_bullet_whoosh_left_01.wav", 25.0f);
+    m_SpawnerPhase1_left.SetDirection(SpawnDirection::FromLeft);
+    m_SpawnerPhase1_left.SetSpawnInterval(0.9f);
+    m_SpawnerPhase1_left.SetBulletCount(2);
+    m_SpawnerPhase1_left.SetMaxSpawns(9999);
+    m_SpawnerPhase1_left.SetBulletSpeed(400.0f);
+    m_SpawnerPhase1_left.SetDuration(15.0f); // lasts 10 seconds.
+    m_SpawnerPhase1_left.SetUseDurationOnly(true);
+    m_SpawnerPhase1_left.SetBulletSound("snd_bullet_whoosh_left_01.wav", 25.0f);
 
     // for Phase 2. bullets will come from the right side but on the floor.
     m_SpawnerPhase2.SetDirection(SpawnDirection::FromRight);
@@ -32,6 +33,7 @@ Bullet_AttackDemo::Bullet_AttackDemo()
     m_SpawnerPhase2.SetDuration(4.0f);  // lasts 15 seconds.
     m_SpawnerPhase2.SetMaxSpawns(9999);
     m_SpawnerPhase2.SetUseDurationOnly(true);
+    m_SpawnerPhase1.SetRareBullet("content/textures/spr_easteregg.png", 0.02f, 1.6f, 0.0f);
 
     // Spawn near the floor so the player is able to jump.
     m_SpawnerPhase2.SetSpawnYPositions({ 850, 900, 950, 1000 });
@@ -45,8 +47,19 @@ Bullet_AttackDemo::Bullet_AttackDemo()
     m_SpawnerPhase3.SetDuration(30.0f); // lasts 30 seconds.
     m_SpawnerPhase3.SetProgressive(true);
     m_SpawnerPhase3.SetBulletSound("snd_bullet_falling_01.wav", 40.0f);
+    m_SpawnerPhase1.SetRareBullet("content/textures/spr_easteregg.png", 0.05f, 1.5f, 0.0f, 66);
     //m_SpawnerPhase3.SetMinSpawnInterval(0.2f);
     //m_SpawnerPhase3.SetAccelerationRate(0.03f);
+
+     // Phase 3 left spawner. it activates after 15 seconds
+    m_SpawnerPhase3_left.SetDirection(SpawnDirection::FromLeft);
+    m_SpawnerPhase3_left.SetSpawnInterval(0.9f);
+    m_SpawnerPhase3_left.SetBulletCount(2);
+    m_SpawnerPhase3_left.SetMaxSpawns(9999);
+    m_SpawnerPhase3_left.SetBulletSpeed(400.0f);
+    m_SpawnerPhase3_left.SetDuration(15.0f); // lasts 15 seconds.
+    m_SpawnerPhase3_left.SetUseDurationOnly(true);
+    m_SpawnerPhase3_left.SetBulletSound("snd_bullet_whoosh_left_01.wav", 25.0f);
 
     // and then on phase 4. for our final phase, a spiral will be moving across the map.
     m_SpawnerPhase4.SetSpiralSpeed(190.0f);
@@ -66,8 +79,11 @@ Bullet_AttackDemo::Bullet_AttackDemo()
 void Bullet_AttackDemo::TransitionToPhase(AttackDemoPhase phase)
 {
     m_currentPhase = phase;
-    Player& player = Engine::GetEngine()->GetPlayer();
 
+    if (!Engine::GetEngine()) return;
+
+    Player& player = Engine::GetEngine()->GetPlayer();
+    
     switch (phase)
     {
     case AttackDemoPhase::Phase1:
@@ -82,6 +98,7 @@ void Bullet_AttackDemo::TransitionToPhase(AttackDemoPhase phase)
     case AttackDemoPhase::Phase3:
         Engine::GetEngine()->AddScore(160);
         player.SetPlayerMode(PlayerMode::Yellow);
+        Engine::GetEngine()->DisplayHint("Press Z to shoot!");
         Message("Phase 3 starts now!")
         break;
     case AttackDemoPhase::Phase4:
@@ -140,15 +157,28 @@ void Bullet_AttackDemo::Update(float dt, RenderWindow& window, vector<Particle>&
 
         if (m_bPhase1LeftActive)
         {
-            m_SpawnerPhase1Left.Update(dt, window, particles); // now we update it's movements.
-
-        }  
+            m_SpawnerPhase1_left.Update(dt, window, particles); // now we update it's movements.
+        }
         break;
     case AttackDemoPhase::Phase2:
         m_SpawnerPhase2.Update(dt, window, particles);
         break;
     case AttackDemoPhase::Phase3:
+        m_phase3Timer += dt;
+        // activates our left spawner after 5 seconds.
+
+        if (!m_bPhase3LeftActive && m_phase3Timer >= 15.0f)
+        {
+            m_bPhase3LeftActive = true;
+            Message("Phase 3 - Left spawner has activated!")
+        }
+
         m_SpawnerPhase3.Update(dt, window, particles);
+
+        if (m_bPhase3LeftActive)
+        {
+            m_SpawnerPhase3_left.Update(dt, window, particles); // now we update it's movements.
+        }
         break;
     case AttackDemoPhase::Phase4:
         m_SpawnerPhase4.Update(dt, window, particles);
@@ -196,11 +226,13 @@ bool Bullet_AttackDemo::IsPatternComplete() const
 void Bullet_AttackDemo::Reset()
 {
     m_SpawnerPhase1.Reset();
-    m_SpawnerPhase1Left.Reset();
+    m_SpawnerPhase1_left.Reset();
     m_SpawnerPhase2.Reset();
     m_SpawnerPhase3.Reset();
+    m_SpawnerPhase3_left.Reset();
     m_SpawnerPhase4.Reset();
     m_phase1Timer = 0.0f;
+    m_phase3Timer = 0.0f;
     m_bPhase1LeftActive = false;
 
     m_bIsComplete = false;

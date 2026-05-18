@@ -1,6 +1,7 @@
 #pragma once
 #include "Object.h"
 #include "Matrices.h"
+#include "Textures/GameSprite.h"
 
 #ifndef M_PI
 #define M_PI 3.1415926535897932384626433
@@ -13,8 +14,9 @@ const float SCALE = 0.999;
 using namespace Matrices;
 using namespace sf;
 
-class Engine; 
+class Engine;
 
+// after project is submitted, we should turn this into a seperate class.
 class Particle : public Drawable, public Object
 {
 public:
@@ -48,6 +50,24 @@ public:
     bool almostEqual(double a, double b, double eps = 0.0001);
     void unitTests();
 
+
+    /* EXTRA */
+    void SetSprite(const string& spritePath, float scale = 1.0f, float rotation = 0.0f)
+    {
+        bool bLoaded = m_sprite.Load(spritePath);
+        m_bUseSprite = bLoaded;
+
+        if (bLoaded)
+        {
+            m_sprite.SetScale(scale);
+            m_sprite.setRotation(rotation);
+        }
+    }
+
+    void SetRareBullet(bool bIsRare) { m_bIsRareBullet = bIsRare; }
+    bool IsRareBullet() const { return m_bIsRareBullet; }
+
+    bool IsUsingSprite() const { return m_bUseSprite; }
 
 private:
 
@@ -83,4 +103,9 @@ private:
     Color m_color1;
     Color m_color2;
     Matrix m_A;
+
+    /* EXTRA */
+    GameSprite m_sprite;
+    bool m_bUseSprite = false;
+    bool m_bIsRareBullet = false;
 };

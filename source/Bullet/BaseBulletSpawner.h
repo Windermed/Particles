@@ -132,6 +132,17 @@ public:
 		m_bUseDurationOnly = durationOnly;
 	}
 
+	// Sets up rare bullet.
+	void SetRareBullet(const string& spritePath, float chance = 0.05f, float scale = 1.0f, float rotation = 0.0f, int scoreValue = 420)
+	{
+		m_rareBulletSprite = spritePath;
+		m_rareBulletChance = chance;
+		m_rareBulletScale = scale;
+		m_rareBulletRotation = rotation;
+		m_rareBulletScore = scoreValue;
+		m_bUseRareBullets = true;
+	}
+
 	// set up how many bullets spawn per interval.
 	void SetBulletCount(int count) { m_BulletCount = count; }
 
@@ -218,6 +229,23 @@ protected:
 
 	// duration
 	bool m_bUseDurationOnly = false;
+
+	// enable to use rare bullets (more so a sprite replacing a particle).
+	bool m_bUseRareBullets = false;
+
+	// chance of a rare bullet appearing.
+	float m_rareBulletChance = 0.05f;
+
+	// the size of the rare bullet
+	float m_rareBulletScale = 1.0f;
+
+	// rotation of rare bullett
+	float m_rareBulletRotation = 0.0f; // honestly we should probably move scale and rotation to object.
+
+	// how much is a rare bullet worth. (assuming we make it shootable)
+	int m_rareBulletScore = 420;
+	// sprite of rare bullet.
+	string m_rareBulletSprite = "";
 
 	/* sets up how many bullets are allowed to spawn per interval. */
 	/* change this to more than 1 if you want bursts. */

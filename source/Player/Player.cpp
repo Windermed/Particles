@@ -23,6 +23,7 @@ Player::Player()
 
 	SetPlayerMode(m_playerMode);
 	m_playerSprite.setPosition(m_position);
+	m_bIsPlayerInitialized = true;
 }
 
 void Player::SetPlayerMode(PlayerMode playerMode)
@@ -44,7 +45,13 @@ void Player::SetPlayerMode(PlayerMode playerMode)
 	{
 	case PlayerMode::Red:
 		m_playerSprite.Load("content/textures/player/spr_heart_red.png");
-		m_playerSprite.setRotation(0.0f);	
+		m_playerSprite.setRotation(0.0f);
+
+		// to avoid the sound from playing on menus or areas its not supposed to be in.
+		if (m_bIsPlayerInitialized) 
+		{
+			SoundManager::GetInstance().PlaySound("snd_player_red_activate.wav", 30.0f);
+		}
 		break;
 
 	case PlayerMode::Blue:
@@ -151,6 +158,8 @@ void Player::StartMoveToCenter()
 
 void Player::HandleInput(float dt)
 {
+
+	if (m_bInputLocked) return;
 
 	// checks if we've reached the center. if so, player character related input is disabled.
 	if (m_bHasReachedCenter) return;
@@ -291,7 +300,7 @@ bool Player::CheckHit(Vector2f particleCenter, float particleRadius) const
 
 void Player::ResetPlayer()
 {
-	m_lives = 3;
+	m_lives = PLAYER_LIVES;
 	m_bHasReachedCenter = false;
 	m_bIsMovingToCenter = false;
 	m_bLandingInvincible = false;
@@ -386,9 +395,6 @@ void Player::Update(float dt)
 	}
 
 	m_playerSprite.setPosition(m_position);
-
-	// change color depending on player (soul) mode.
-	//m_shape.setFillColor(m_playerMode == PlayerMode::Red ? Color::Red : Color::Blue);
 
 	
 }

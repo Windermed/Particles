@@ -81,6 +81,7 @@ public:
 		}
 	}
 
+	// add up player score.
 	void AddScore(int points)
 	{
 		m_score += points;
@@ -95,12 +96,26 @@ public:
 		Message("Score: " << m_score << " High: " << m_highScore)
 	}
 
+	// reset player score.
 	void ResetScore()
 	{
 		m_score = 0;
 		m_scoreText.setString("Score: 0");
 	}
+
+	// get current player score.
 	int GetScore() const { return m_score; }
+
+	// display text hint.
+	void DisplayHint(const string& text)
+	{
+		m_hintText.setString(text);
+		m_hintText.CenterAtY(SCREEN_HEIGHT / 2.0f + 200.0f);
+		m_hintText.FlashText();
+	}
+
+	// hide hint.
+	void HideHint() { m_hintText.StopFlash(); }
 
 
 private:
@@ -202,8 +217,12 @@ private:
 	GameText m_highScoreText;
 	GameText m_winScoreText;
 
+	GameText m_hintText;
 
 	GameText m_attackNameText;
+
+
+	
 
 
 	/* SCORE */

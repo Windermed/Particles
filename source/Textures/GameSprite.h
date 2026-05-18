@@ -17,6 +17,52 @@ public:
 		Load("content/textures/spr_placeholder.png"); // loads a default sprite.
 	}
 
+	// copy constructor as sf::Texture doesn't copy well.
+	GameSprite(const GameSprite& other)
+	{
+		m_filename = other.m_filename;
+		m_bIsLoaded = other.m_bIsLoaded;
+		
+		// if sprite loads.
+		if (m_bIsLoaded)
+		{
+			// reload textures
+			m_texture.loadFromFile(m_filename);
+			setTexture(m_texture);
+			CenterOrigin();
+
+			// once reloaded, we preserve the OG transform.
+			setPosition(other.getPosition());
+			setScale(other.getScale());
+			setRotation(other.getRotation());
+		}
+	}
+	
+	// a copy assignment op. we call this when an existing GameSprite is assigned from another.
+	GameSprite& operator=(const GameSprite& other)
+	{
+		// avoid reloading if we assign to self.
+		if (this != &other)
+		{
+			m_filename = other.m_filename;
+			m_bIsLoaded = other.m_bIsLoaded;
+
+			if (m_bIsLoaded)
+			{
+				// reload a texture so this instance can have it's own texture reference.
+				m_texture.loadFromFile(m_filename);
+				setTexture(m_texture);
+				CenterOrigin();
+
+				// again, we will preserve the OG transform.
+				setPosition(other.getPosition());
+				setScale(other.getScale());
+				setRotation(other.getRotation());
+			}
+		}
+		return *this;
+	}
+
 	// constructor that loads from file.
 	GameSprite(const string& filename) { Load(filename); }
 

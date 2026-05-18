@@ -76,6 +76,7 @@ GameText::GameText(String text, Vector2f position, unsigned int fontSize, Color 
 
 void GameText::DrawText()
 {
+	if (!m_bIsTextVisible) return;
 	Engine::GetEngine()->GetWindow().draw(*this);
 }
 

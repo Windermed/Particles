@@ -32,12 +32,22 @@ private:
 
     // one spawner set is made for each.
     BaseBulletSpawner m_SpawnerPhase1;
-    BaseBulletSpawner   m_SpawnerPhase1Left;
+    BaseBulletSpawner   m_SpawnerPhase1_left;
+
     float m_phase1Timer = 0.0f;
     bool m_bPhase1LeftActive = false;
 
+    float m_phase3Timer = 0.0f;
+    bool m_bPhase3LeftActive = false;
+
+    // phase 2
     BaseBulletSpawner m_SpawnerPhase2;
+
+    // phase 3
     BaseBulletSpawner m_SpawnerPhase3;
+    BaseBulletSpawner m_SpawnerPhase3_left;
+
+    // phase 4.
     SpiralBulletSpawner m_SpawnerPhase4;
 
     AttackDemoPhase m_currentPhase = AttackDemoPhase::Phase1;

@@ -6,7 +6,7 @@ Bullet_AttackTest::Bullet_AttackTest()
 	m_rain.SetPhaseMode(true);
 
 	// for phase 1, let's allow bullets to fall down for 4 seconds.
-	m_rain.AddPhase(SpawnDirection::FromTop, 4.0f, 0.8);
+	m_rain.AddPhase(SpawnDirection::FromTop, 111.0f, 0.8);
 
 	// then after that, let's fire off bullets from the left for 4 seconds in Phase 2.
 	m_rain.AddPhase(SpawnDirection::FromLeft, 4.0f, 0.6f);

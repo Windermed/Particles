@@ -44,6 +44,59 @@ public:
 	// center the text.
 	void CenterText(FloatRect bounds);
 
+	void FlashText(float flashRate = 0.5f)
+	{
+		m_bIsTextFlashing = true;
+		m_bIsTextVisible = true;
+		m_flashRate = flashRate;
+		m_flashTimer = 0.0f;
+		m_flashDuration = -1.0f;
+		m_elapsedTime = 0.0f;
+	}
+
+	// Flash for a specified duration then stop.
+	void FlashText(float duration, float flashRate = 0.5f)
+	{
+		m_bIsTextFlashing = true;
+		m_bIsTextVisible = true;
+		m_flashRate = flashRate;
+		m_flashTimer = 0.0f;
+		m_flashDuration = duration;
+		m_elapsedTime = 0.0f;
+	}
+
+	// stops flashing text.
+	void StopFlash()
+	{
+		m_bIsTextFlashing = false;
+		m_bIsTextVisible = true;
+		m_flashTimer = 0.0f;
+		m_elapsedTime - 0.0f;
+	}
+
+	void UpdateFlash(float dt)
+	{
+		if (!m_bIsTextFlashing) return;
+
+		m_flashTimer += dt;
+		m_elapsedTime += dt;
+
+		// toggle visibility on flash rate.
+		if (m_flashTimer > -m_flashRate)
+		{
+			m_bIsTextVisible = !m_bIsTextVisible;
+			m_flashTimer = 0.0f;
+		}
+
+		// stop after specified duration if it's not infintite
+		if (m_flashDuration > 0.0f && m_elapsedTime >= m_flashDuration)
+		{
+			StopFlash();
+		}
+	}
+
+	bool IsTextFlashing() const { return m_bIsTextFlashing; }
+
 
 	// Updates String and you can optionally re center it.
 	//void SetText(String text, bool bRecenterText = false);
@@ -64,5 +117,15 @@ private:
 
 	static Font m_font; // TODO: MAKE FONT CONFIGURABLE.
 	static bool m_bIsFontLoaded;
+
+	bool m_bIsTextFlashing = false;
+	bool m_bIsTextVisible = true;
+	float m_flashRate = 0.5f;
+	float m_flashTimer = 0.0f;
+
+	// set to -1 for infinite.
+	float m_flashDuration = -1.0f;
+
+	float m_elapsedTime = 0.0f;
 };
 
