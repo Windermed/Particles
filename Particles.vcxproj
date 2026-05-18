@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version='1.0' encoding='utf-8'?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -23,7 +23,7 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{fe21ad2e-6770-4464-890b-4e8d49428963}</ProjectGuid>
     <RootNamespace>Particles</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -70,6 +70,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IntDir>$(SolutionDir)\intermediate\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IntDir>$(SolutionDir)\intermediate\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -104,7 +110,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\SFML\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\SFML\Include;$(ProjectDir)Source;$(ProjectDir)Source\Engine;$(ProjectDir)Source\Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -112,6 +119,10 @@
       <AdditionalLibraryDirectories>C:\SFML\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-network-d.lib;sfml-audio-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -121,17 +132,52 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\SFML\Include;$(ProjectDir)Source;$(ProjectDir)Source\Engine;$(ProjectDir)Source\Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\SFML\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;sfml-network.lib;sfml-audio.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y "$(ProjectDir)dependencies\sfml-system-2.dll" "$(OutDir)"
+xcopy /Y "$(ProjectDir)dependencies\sfml-graphics-2.dll" "$(OutDir)"
+xcopy /Y "$(ProjectDir)dependencies\sfml-window-2.dll" "$(OutDir)"
+xcopy /Y "$(ProjectDir)dependencies\sfml-audio-2.dll" "$(OutDir)"
+xcopy /Y "$(ProjectDir)dependencies\sfml-network-2.dll" "$(OutDir)"
+xcopy /Y "$(ProjectDir)dependencies\openal32.dll" "$(OutDir)"
+xcopy /Y /E "$(ProjectDir)content\" "$(OutDir)content\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Particles.cpp" />
-  </ItemGroup>
+    <ClCompile Include="source\Engine\Engine.cpp" />
+    <ClCompile Include="source\UI\GameText.cpp" />
+    <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="source\Particle\Matrices.cpp" />
+    <ClCompile Include="source\Particle\Particle.cpp" />
+    <ClCompile Include="source\Player\Player.cpp" />
+    <ClCompile Include="source\Bullet\PlayerBullet.cpp" />
+    <ClCompile Include="source\Sounds\SoundManager.cpp" />
+    <ClCompile Include="source\Bullet\BaseBulletSpawner.cpp" />
+    <ClCompile Include="source\Textures\GameSprite.cpp" />
+  <ClCompile Include="source\Bullet\Spawners\SpiralBulletSpawner.cpp" /><ClCompile Include="source\Bullet\Attacks\Bullet_AttackTest.cpp" /><ClCompile Include="source\Bullet\Attacks\Bullet_AttackDemo.cpp" /></ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\Core\Constants.h" />
+    <ClInclude Include="source\Engine\Engine.h" />
+    <ClInclude Include="source\UI\GameText.h" />
+    <ClInclude Include="source\Particle\Matrices.h" />
+    <ClInclude Include="source\Core\Object.h" />
+    <ClInclude Include="source\Particle\Particle.h" />
+    <ClInclude Include="source\Player\Player.h" />
+    <ClInclude Include="source\Bullet\PlayerBullet.h" />
+    <ClInclude Include="source\Sounds\SoundManager.h" />
+    <ClInclude Include="source\Bullet\BaseBulletSpawner.h" />
+    <ClInclude Include="source\Textures\GameSprite.h" />
+  <ClInclude Include="source\Bullet\Spawners\SpiralBulletSpawner.h" /><ClInclude Include="source\Bullet\Attacks\Bullet_AttackTest.h" /><ClInclude Include="source\Bullet\Attacks\Bullet_AttackDemo.h" /></ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
