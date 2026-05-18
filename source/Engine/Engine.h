@@ -25,6 +25,7 @@ enum class GameState
 	None = 3
 };
 
+// we should make seperate classes in the future to not clutter up Engine.
 class Engine
 {
 public:
@@ -117,6 +118,8 @@ public:
 	// hide hint.
 	void HideHint() { m_hintText.StopFlash(); }
 
+	void StartGauntlet();
+	bool IsGauntletMode() const { return m_bGauntletMode; }
 
 private:
 
@@ -209,10 +212,11 @@ private:
 	GameText m_debugText;
 	GameText m_livesText;
 
+	// contains the text for Try Again and Main Menu
+	GameText m_winLosePrompt;
+
 	GameText m_winText;
-	GameText m_winPrompt;
 	GameText m_gameOverText;
-	GameText m_gameOverPrompt;
 
 	GameText m_scoreText;
 	GameText m_highScoreText;
@@ -224,7 +228,11 @@ private:
 
 	GameText m_ParticleText;
 
+	GameText m_GauntletMenuText;
+	GameText m_GauntletOverText;
 
+	/* TEMPORARY */
+	GameText m_thankYouText;
 	
 
 
@@ -245,6 +253,11 @@ private:
 	float m_flashTimer = 0.0f;
 	float m_flashDuration = 0.3f;
 	bool m_bIsflashing = false;
+
+
+	/* GAUNTLET MODE */
+	bool m_bGauntletMode = false;
+	int m_gauntletWave = 0;
 
 	
 

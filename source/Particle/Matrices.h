@@ -8,43 +8,39 @@ using namespace std;
 namespace Matrices
 {
     class Matrix
-    {
-        public:
-            
-            /* Construct a matrix of the specified size. */
-            /* Initialize each element to 0. */
-            Matrix(int _rows, int _cols);
+    { 
+    public:
+        /* Construct a matrix of the specified size. */
+        /* Initialize each element to 0. */
+        Matrix(int _rows, int _cols);
 
-            ///************************************
-            ///inline accessors / mutators, these are done:
+        /* Read element at row i, column j */
+        /* @usage:  double x = a(i, j) */
+        const double& operator()(int i, int j) const
+        {
+            return a.at(i).at(j);
+        }
 
-            /* Read element at row i, column j */
-            /* @usage:  double x = a(i, j) */
-            const double& operator()(int i, int j) const
-            {
-                return a.at(i).at(j);
-            }
+        /* Assign element at row i, column j */
+        /* @usage:  a(i, j) = x; */
+        double& operator()(int i, int j)
+        {
+            return a.at(i).at(j);
+        }
 
-            /* Assign element at row i, column j */
-            /* @usage:  a(i, j) = x; */
-            double& operator()(int i, int j)
-            {
-                return a.at(i).at(j);
-            }
+        /* Gets rows. */
+        int GetRows() const { return rows; }
 
-            /* Gets rows. */
-            int GetRows() const{return rows;}
+        /* Gets cols. */
+        int GetCols() const { return cols; }
 
-            /* Gets cols. */
-            int GetCols() const{return cols;}
 
-            
-        protected:
-            /* adjusted to protected so subclasses may modify. */
-            vector<vector<double>> a;
-        private:
-            int rows;
-            int cols;
+    protected:
+        /* adjusted to protected so subclasses may modify. */
+        vector<vector<double>> a;
+    private:
+        int rows;
+        int cols;
     };
 
     /* Adds each corresponding element. */
@@ -71,28 +67,24 @@ namespace Matrices
 
     // first attempt at writing comments like this.
 
-    /**
-    * @brief A 2D rotation matrix.
-    *
-    * @code
+    /*
+    * A 2D rotation matrix.
     * A = R * a;
-    * @endcode
-    * rotates A theta radians counter - clockwise
-    */
+    * rotates A theta radians counter - clockwise */
     class RotationMatrix : public Matrix
     {
-        public:
-            /**
-            * @brief Constructs a 2x2 counter-clocwise rotation matrix.
-            * Then assign each element as follows:
-            * @code
-            * [cos(theta) - sin(theta)]
-            * [sin(theta) cos(theta) 
-            * @endcode
-            *
-            * @param theta represents the angle of rotation in radians, counter-clockwise
-            */
-            RotationMatrix(double theta);
+    public:
+        /**
+        * @brief Constructs a 2x2 counter-clocwise rotation matrix.
+        * Then assign each element as follows:
+        * @code
+        * [cos(theta) - sin(theta)]
+        * [sin(theta) cos(theta)
+        * @endcode
+        *
+        * @param theta represents the angle of rotation in radians, counter-clockwise
+        */
+        RotationMatrix(double theta);
     };
 
     /**
@@ -104,18 +96,18 @@ namespace Matrices
     */
     class ScalingMatrix : public Matrix
     {
-        public:
-            /**
-            /* @brief Call the parent constructor to create a 2x2 matrix
-            /* Then assign each element as follows:
-            /* @code
-            /* [scale 0]
-            /* [0       scale]
-            * @endcode
-            * 
-            * @param scale the size multipler.
-            */
-            ScalingMatrix(double scale);
+    public:
+        /**
+        /* @brief Call the parent constructor to create a 2x2 matrix
+        /* Then assign each element as follows:
+        /* @code
+        /* [scale 0]
+        /* [0       scale]
+        * @endcode
+        *
+        * @param scale the size multipler.
+        */
+        ScalingMatrix(double scale);
     };
 
     /**
@@ -127,19 +119,19 @@ namespace Matrices
     */
     class TranslationMatrix : public Matrix
     {
-        public:
-            /**
-            * @brief Call the parent constructor to create a 2xn matrix
-            * Then assign each element as follows:
-            *
-            * [xShift  xShift  xShift  ...]
-            * [yShift  yShift  yShift  ...]
-            * @endcode
-            *
-            * paramaters are xShift, yShift, and nCols
-            * nCols represents the number of columns in the matrix
-            * where each column contains one (x,y) coordinate pair;e
-            */
-            TranslationMatrix(double xShift, double yShift, int nCols);
+    public:
+        /**
+        * @brief Call the parent constructor to create a 2xn matrix
+        * Then assign each element as follows:
+        *
+        * [xShift  xShift  xShift  ...]
+        * [yShift  yShift  yShift  ...]
+        * @endcode
+        *
+        * paramaters are xShift, yShift, and nCols
+        * nCols represents the number of columns in the matrix
+        * where each column contains one (x,y) coordinate pair;e
+        */
+        TranslationMatrix(double xShift, double yShift, int nCols);
     };
 }

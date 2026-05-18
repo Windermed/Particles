@@ -4,11 +4,13 @@
 namespace Matrices
 {
 
+	// constructs a matrix with the set rows and colums.
 	Matrix::Matrix(int _rows, int _cols) : rows(_rows), cols(_cols)
 	{
 		a.resize(rows, vector<double>(cols, 0.0));
 	}
 
+	// adds two matrices element by element.
 	Matrix operator+(const Matrix& a, const Matrix& b)
 	{
 		if (a.GetRows() != b.GetRows() || a.GetCols() != b.GetCols())
@@ -22,6 +24,7 @@ namespace Matrices
 		{
 			for (int j = 0; j < a.GetCols(); j++)
 			{
+				// add corresponding elements from both matrices.
 				for (int k = 0; k < a.GetCols(); k++)
 				{
 					result(i, j) = a(i, j) + b(i, j);
@@ -32,6 +35,7 @@ namespace Matrices
 	}
 
 
+	// Multiplies two matrices together.
 	Matrix operator*(const Matrix& a, const Matrix& b)
 	{
 		if (a.GetCols() != b.GetRows())
@@ -55,7 +59,7 @@ namespace Matrices
 		return result;
 	}
 
-
+	// compare both matrices to see if they are equal. will return false if the dimensions are different.
 	bool operator==(const Matrix& a, const Matrix& b)
 	{
 		if (a.GetRows() != b.GetRows() || a.GetCols() != b.GetCols())
@@ -78,11 +82,14 @@ namespace Matrices
 
 	}
 
+	// will return true if two matrices are NOT equal.
 	bool operator!=(const Matrix& a, const Matrix& b)
 	{
 		return !(a == b);
 	}
 
+	// outputs the matrix to an ostream via a formatted grid.
+	// rows will be seperated using newlines.
 	ostream& operator<<(ostream& os, const Matrix& a)
 	{ 
 		
@@ -100,6 +107,7 @@ namespace Matrices
 		
 	}
 
+	// constructs a 2x2 rotation matrix.
 	RotationMatrix::RotationMatrix(double theta) : Matrix(2, 2)
 	{
 		a[0][0] = cos(theta);
@@ -108,6 +116,7 @@ namespace Matrices
 		a[1][1] = cos(theta);
 	}
 
+	// constructs a 2x2 uniform scaling matrix
 	ScalingMatrix::ScalingMatrix(double scale) : Matrix(2, 2)
 	{
 		a[0][0] = scale;
@@ -116,6 +125,7 @@ namespace Matrices
 		a[1][1] = scale;
 	}
 
+	// constructs a 2cN translation matrix where N is the number of points to translate.
 	TranslationMatrix::TranslationMatrix(double xShift, double yShift, int nCols) : Matrix(2, nCols)
 	{
 		for (int i = 0; i < nCols; i++)

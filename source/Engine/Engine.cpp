@@ -29,15 +29,20 @@ Engine::Engine()
 	// WIN TEXT
 	m_winText = GameText("YOU WIN!!!", 96, Color::Green, false);
 	m_winScoreText = GameText("", 48, Color::Green, false);
-	m_winPrompt = GameText("[R]  Play Again		[M]  Main Menu", 36, Color::White, false);
 	m_winText.CenterAtY(SCREEN_HEIGHT / 2.0f - 200.0f);
-	m_winPrompt.CenterAtY(SCREEN_HEIGHT / 2.0f + 160.0f);
+
+	// TRY AGAIN MAIN MENU TEXT.
+	m_winLosePrompt = GameText("[R]  Try Again 		   [M]  Main Menu", 36, Color::White, false);
+	m_winLosePrompt.CenterAtY(SCREEN_HEIGHT / 2.0f + 40.0f);
 
 	// GAME OVER TEXT
 	m_gameOverText = GameText("GAME OVER!", 96, Color::Red, false);
-	m_gameOverPrompt = GameText("[R]  Try Again 		   [M]  Main Menu", 36, Color::White, false);
 	m_gameOverText.CenterAtY(SCREEN_HEIGHT / 2.0f - 80.0f);
-	m_gameOverPrompt.CenterAtY(SCREEN_HEIGHT / 2.0f + 40.0f);
+
+	// GAUNTLET (ENDURANCE MODE) TEXT
+	m_GauntletMenuText = GameText("[E] Endurance Mode", 36, Color::Yellow, false);
+	m_GauntletMenuText.CenterAtY(SCREEN_HEIGHT / 2.0 + 220.0f);
+
 
 	// SCORE TEXT
 	m_scoreText = GameText("Score: 0", 36, Color::White, false);
@@ -130,11 +135,19 @@ void Engine::Input()
 				switch (m_lastKeyPressed)
 				{
 				case Keyboard::R:
-					SetGameMode(GameMode::BulletHell);
+					if (m_bGauntletMode)
+						StartGauntlet(); // if the game ends and we want to restart in gauntlet, restart gauntlet.
+					else
+						SetGameMode(GameMode::BulletHell); // if not, just start up the game as normal.
 					break;
 				case Keyboard::M:
 					SetGameMode(GameMode::Menu);
 					break;
+				case Keyboard::E:
+					if (!m_bGauntletMode)
+						StartGauntlet(); // if we're not already in gauntlet, start it up.
+					else
+						SetGameMode(GameMode::BulletHell); // if we are, then we assume we want to go back to the og attack.
 				}
 				continue;
 			}
@@ -230,14 +243,52 @@ void Engine::Update(float dtAsSeconds)
 
 		if (m_activeSpawner->IsPatternComplete() && m_particles.empty() && m_GameState != GameState::Win)
 		{
-			m_GameState = GameState::Win;
-			m_Player->StartMoveToCenter();
-			m_Player->ClearBullets();
-			SoundManager::GetInstance().PlaySound("snd_win_01_temp.wav", 50.0f);
+			// check if we are in gauntlet mode.
+			if (m_bGauntletMode)
+			{
+				// since a wave has finished, we will start it immediately
+				m_gauntletWave++;
+				Message("Gauntlet Wave " << m_gauntletWave << " started!")
 
-			// win screen with final score.
-			m_winScoreText.setString("Final Score: " + to_string(m_score));
-			m_winScoreText.CenterAtY(SCREEN_HEIGHT / 2.0f + -115.0f);
+				delete m_activeSpawner;
+				m_activeSpawner = new Bullet_AttackDemo();
+				m_activeSpawner->Reset();
+				m_particles.clear();
+
+				// add bonus score to player for finishing a wave.
+				AddScore(500 * m_gauntletWave);
+
+				// update with current wave.
+				m_attackNameText.setString("Gauntlet Wave " + to_string(m_gauntletWave));
+				m_attackNameText.CenterAtY(SCREEN_HEIGHT - 60.0f);
+			}
+			else // WIN SCREEN.
+			{
+				m_GameState = GameState::Win;
+				m_Player->StartMoveToCenter();
+				m_Player->ClearBullets();
+				SoundManager::GetInstance().PlaySound("snd_win_01_temp.wav", 50.0f);
+
+				// win screen with final score.
+				m_winScoreText.setString("Final Score: " + to_string(m_score));
+				m_winScoreText.CenterAtY(SCREEN_HEIGHT / 2.0f + -130.0f);
+
+				// update positioning on game over prompt.
+				m_winLosePrompt.CenterAtY(SCREEN_HEIGHT / 2.0f + 50.0f);
+
+				// adjust the gauntlet mode text.
+				m_GauntletMenuText.setString("[E] Endurance Mode");
+				m_GauntletMenuText.CenterAtY(SCREEN_HEIGHT / 2.0f + 150.0f);
+
+				m_winText.setString("              THANK YOU    \n\nFOR AN AMAZING SEMESTER!!");
+				//m_winText.setCharacterSize(40);
+				m_winText.CenterAtY(SCREEN_HEIGHT / 2.0f - 200.0f);
+
+				//m_thankYouText.setString("              THANK YOU    \n\nFOR AN AMAZING SEMESTER!!");
+				//m_thankYouText.setCharacterSize(40);
+				//m_thankYouText.CenterAtY(SCREEN_HEIGHT / 2.0f + 240.0f);
+			}
+			
 		}
 
 		// update the live HUD
@@ -276,6 +327,25 @@ void Engine::Draw()
 	m_Window.display();
 }
 
+void Engine::StartGauntlet()
+{
+	m_bGauntletMode = true;
+	m_gauntletWave = 1;
+
+	delete m_activeSpawner;
+	m_activeSpawner = new Bullet_AttackDemo();
+	m_activeSpawner->Reset();
+
+	m_particles.clear();
+	m_Player->ResetPlayer();
+	m_GameState = GameState::Playing;
+	
+	ResetScore();
+	UpdateAttackNameText();
+
+	Message("Gauntlet has begun! We are starting at Wave " << m_gauntletWave)
+}
+
 // spawns a particle at position.
 void Engine::SpawnParticle(Vector2i position)
 {
@@ -295,10 +365,14 @@ void Engine::SpawnParticleBurst(Vector2i position, int count)
 // resets everything for bullet hell
 void Engine::ResetBulletHell()
 {
-	/* DEFAULT */
+	/* DEFAULT ATTACK */
 	delete m_activeSpawner;
 	m_activeSpawner = new Bullet_AttackDemo();
 	m_activeSpawner->Reset();
+
+	m_bGauntletMode = false;
+	m_gauntletWave = 0;
+
 	Message("Active spawner: " << m_activeSpawner->GetName())
 	m_particles.clear();
 	m_Player->ResetPlayer();
@@ -443,6 +517,44 @@ void Engine::UpdateParticlePlayerCollision()
 				m_Player->ClearBullets();
 				m_Player->StartMoveToCenter();
 				// play a game over sound (if we find one).
+
+				if (m_bGauntletMode) // GAUNTLET GAME OVER SCREEN.
+				{
+					m_gameOverText.setString("GAUNTLET OVER!!");
+					m_gameOverText.setFillColor(Color::Cyan);
+					m_gameOverText.CenterAtY(SCREEN_HEIGHT / 2.0f - 200.0f);
+
+					m_winScoreText.setString("Final Score: " + to_string(m_score));
+					m_winScoreText.CenterAtY(SCREEN_HEIGHT / 2.0f + -60.0f);
+
+					m_GauntletOverText.setString("Wave " + to_string(m_gauntletWave) + " has been reached!");
+					m_GauntletOverText.CenterAtY(SCREEN_HEIGHT / 2.0f - 130.0f);
+
+					// TRY AGAIN MAIN MENU.
+					m_winLosePrompt.CenterAtY(SCREEN_HEIGHT / 2.0f + 60.0f);
+
+					// adjust the gauntlet mode text.
+					m_GauntletMenuText.setString("[E] Go Back to Regular Attack");
+					m_GauntletMenuText.CenterAtY(SCREEN_HEIGHT / 2.0f + 150.0f);
+
+					
+				}
+				else  // REGULAR GAME OVER SCREEN
+				{
+					// sets thestandard game over text back.
+					m_gameOverText.setString("GAME OVER!!");
+					m_gameOverText.CenterAtY(SCREEN_HEIGHT / 2.0f - 200.0f);
+
+					m_winScoreText.setString("Recent Score: " + to_string(m_score) + " \nBest Score: " + to_string(m_highScore));
+					m_winScoreText.CenterAtY(SCREEN_HEIGHT / 2.0f - 80.0f);
+
+					// TRY AGAIN MAIN MENU.
+					m_winLosePrompt.CenterAtY(SCREEN_HEIGHT / 2.0f + 60.0f);
+
+					// adjust the gauntlet mode text.
+					m_GauntletMenuText.setString("[E] Endurance Mode");
+					m_GauntletMenuText.CenterAtY(SCREEN_HEIGHT / 2.0f + 150.0f);
+				}
 				return;
 			}
 			continue;
@@ -454,13 +566,19 @@ void Engine::UpdateParticlePlayerCollision()
 
 void Engine::UpdateAttackNameText()
 {
-	if (m_activeSpawner)
+	if (!m_activeSpawner) return; // just so we don't have to double check.
+
+	if (m_bGauntletMode)
+	{
+		m_attackNameText.setString("Gauntlet - Wave " + to_string(m_gauntletWave));
+	}
+	else
 	{
 		m_attackNameText.setString(string("Current Attack: ") + m_activeSpawner->GetName());
-
-		// recenter text after we update
-		m_attackNameText.CenterAtY(SCREEN_HEIGHT - 60.0f);
 	}
+
+	// recenter text after we update
+	m_attackNameText.CenterAtY(SCREEN_HEIGHT - 60.0f);
 		
 }
 
@@ -470,6 +588,7 @@ void Engine::InputMenu()
 	{
 	case Keyboard::Num1: // sets gamemode to particles (OG Project)
 		SetGameMode(GameMode::Particles);
+		break;
 		break;
 	case Keyboard::Num2:
 		SetGameMode(GameMode::BulletHell); // sets gamemode to bullet hell
@@ -581,17 +700,18 @@ void Engine::DrawBulletHell()
 	m_Player->Draw(m_Window); // draw the player.
 	m_Player->DrawBullets(m_Window); // draw the player bullets if yellow mode is on.
 
-	m_scoreText.DrawText();
-	m_highScoreText.DrawText();
-	m_livesText.DrawText();
-	m_attackNameText.DrawText();
-
 	if (m_bIsflashing) // if it's flashing, flash the screen.
 		m_Window.draw(m_flashOverlay);
 
-	if (m_GameState == GameState::Playing && m_hintText.IsTextFlashing())
+	if (m_GameState == GameState::Playing)
 	{
-		m_hintText.DrawText();
+		if (m_hintText.IsTextFlashing())
+			m_hintText.DrawText();
+
+		m_scoreText.DrawText();
+		m_highScoreText.DrawText();
+		m_livesText.DrawText();
+		m_attackNameText.DrawText();	
 	}
 
 	// Draw game state on TOP of everything.
@@ -603,13 +723,22 @@ void Engine::DrawGameState()
 	switch (m_GameState)
 	{
 	case GameState::Win:
-		m_Window.draw(m_winText);
-		m_Window.draw(m_winScoreText);
-		m_Window.draw(m_winPrompt);
+		m_winText.DrawText();
+		m_winScoreText.DrawText();
+		m_winLosePrompt.DrawText();
+		m_GauntletMenuText.DrawText();
+		m_thankYouText.DrawText();
 		break;
 	case GameState::GameOver:
-		m_Window.draw(m_gameOverText);
-		m_Window.draw(m_gameOverPrompt);
+		m_gameOverText.DrawText();
+		m_winScoreText.DrawText();
+		m_winLosePrompt.DrawText();
+
+		if (IsGauntletMode())
+			m_GauntletOverText.DrawText();
+
+		m_GauntletMenuText.DrawText();
+
 		break;
 	default:
 		break;
