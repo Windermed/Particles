@@ -33,7 +33,7 @@ Engine::Engine()
 	// lowkey feel like a skid writing this LMAOO
 	
 	//m_menuVersion = GameText("v1.0 | dev ", 24, Color(150, 150, 150, 255), false); // skids after making project styrofoam or whatever
-	m_menuVersion = GameText("windermed", 24, Color(150, 150, 150, 255), false); // skids after writing 1 line of code.
+	m_menuVersion = GameText("windermed", 24, Color(150, 150, 150, 255), false);
 	m_menuVersion.CenterAtY(SCREEN_HEIGHT - 40.0f);
 
 	// WIN TEXT
