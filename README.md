@@ -3,9 +3,11 @@
 a particle system and bullet hell game that was built using C++ and SFML. 
 the bullet hell section is heavily inspired by UT/DR
 
+<img src="media/github_preview02.png">
+
 ## Build Instructions
 
-## Windows
+### Windows
 Just open `Particles.sln` using Visual Studio then build.
 
 ### Linux
@@ -22,3 +24,10 @@ make
 make run
 
 ```
+## Credits
+
+If you use or reference this project please provide credit.
+
+## License
+
+MIT License. see the LICENSE file for more info.
