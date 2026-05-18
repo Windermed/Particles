@@ -22,7 +22,6 @@ BaseBulletSpawner::BaseBulletSpawner()
 // update for base.
 void BaseBulletSpawner::Update(float dt, RenderWindow& window, vector<Particle>& particles)
 {
-
 	m_bHasStarted = true;
 
 	if (!ShouldSpawn(dt)) return;
@@ -60,13 +59,13 @@ void BaseBulletSpawner::Update(float dt, RenderWindow& window, vector<Particle>&
 			break;
 
 		case SpawnDirection::FromLeft:
-			spawnPos = Vector2i(10, rand() % SCREEN_HEIGHT); // randomized.
+			spawnPos = Vector2i(10, m_bUseCustomY ? m_spawnY[rand() % m_spawnY.size()] : rand() % SCREEN_HEIGHT);
 			velX = m_bulletSpeed;
 			velY = 0.0f;
 			break;
 
 		case SpawnDirection::FromRight:
-			spawnPos = Vector2i(SCREEN_WIDTH - 10, rand() % SCREEN_HEIGHT);
+			spawnPos = Vector2i(SCREEN_WIDTH - 10, m_bUseCustomY ? m_spawnY[rand() % m_spawnY.size()] : rand() % SCREEN_HEIGHT);
 			velX = -m_bulletSpeed;
 			velY = 0.0f;
 			break;
@@ -75,6 +74,7 @@ void BaseBulletSpawner::Update(float dt, RenderWindow& window, vector<Particle>&
 		Particle p = MakeParticle(window, spawnPos);
 		p.SetVelocity(velX, velY);
 
+		// if rare bullets are enabled.
 		if (m_bUseRareBullets)
 		{
 			// roll for a rare bullet.
@@ -89,9 +89,7 @@ void BaseBulletSpawner::Update(float dt, RenderWindow& window, vector<Particle>&
 
 		particles.push_back(p);
 
-		Message("Dir: " << (int)m_spawnDirection << " SpawnPos: " << spawnPos.x << ", " << spawnPos.y << " Center: " << p.GetCenter().x << ", " << p.GetCenter().y << " OffScreen: " << p.IsOffScreen());
-
-		
+		Message("Direction: " << (int)m_spawnDirection << " SpawnPos: " << spawnPos.x << ", " << spawnPos.y << " Center: " << p.GetCenter().x << ", " << p.GetCenter().y);
 
 		m_SpawnCount++;
 

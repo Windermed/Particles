@@ -28,26 +28,26 @@ Bullet_AttackDemo::Bullet_AttackDemo()
 
     // for Phase 2. bullets will come from the right side but on the floor.
     m_SpawnerPhase2.SetDirection(SpawnDirection::FromRight);
-    m_SpawnerPhase2.SetSpawnInterval(0.7f);
+    m_SpawnerPhase2.SetSpawnInterval(0.9f);
+    m_SpawnerPhase2.SetBulletCount(1);
     m_SpawnerPhase2.SetBulletSpeed(350.0f);
-    m_SpawnerPhase2.SetDuration(4.0f);  // lasts 15 seconds.
+    m_SpawnerPhase2.SetDuration(15.0f);  // lasts 15 seconds.
+  
     m_SpawnerPhase2.SetMaxSpawns(9999);
     m_SpawnerPhase2.SetUseDurationOnly(true);
-    m_SpawnerPhase1.SetRareBullet("content/textures/spr_easteregg.png", 0.02f, 1.6f, 0.0f);
-
-    // Spawn near the floor so the player is able to jump.
-    m_SpawnerPhase2.SetSpawnYPositions({ 850, 900, 950, 1000 });
+    m_SpawnerPhase2.SetRareBullet("content/textures/spr_easteregg.png", 0.02f, 1.6f, 0.0f);
+    m_SpawnerPhase2.SetSpawnYPositions({ 950 }); // Spawn near the floor so the player is able to jump.
 
     // for phase 3. bullets will fall down and player must shoot them.
     m_SpawnerPhase3.SetDirection(SpawnDirection::FromTop);
-    m_SpawnerPhase3.SetSpawnInterval(0.1f);
+    m_SpawnerPhase3.SetSpawnInterval(0.2f);
     m_SpawnerPhase3.SetBulletCount(4);
     m_SpawnerPhase3.SetMaxSpawns(9999);
     m_SpawnerPhase3.SetBulletSpeed(550.0f);
     m_SpawnerPhase3.SetDuration(30.0f); // lasts 30 seconds.
     m_SpawnerPhase3.SetProgressive(true);
     m_SpawnerPhase3.SetBulletSound("snd_bullet_falling_01.wav", 40.0f);
-    m_SpawnerPhase1.SetRareBullet("content/textures/spr_easteregg.png", 0.05f, 1.5f, 0.0f, 66);
+    m_SpawnerPhase3.SetRareBullet("content/textures/spr_easteregg.png", 0.05f, 1.5f, 0.0f, 66);
     //m_SpawnerPhase3.SetMinSpawnInterval(0.2f);
     //m_SpawnerPhase3.SetAccelerationRate(0.03f);
 
@@ -70,6 +70,7 @@ Bullet_AttackDemo::Bullet_AttackDemo()
     m_SpawnerPhase4.SetBulletSpeed(300.0f);
     m_SpawnerPhase4.SetSpiralMoving(true, 500.0f, 0.8f);
     m_SpawnerPhase4.SetMaxSpawns(9999); // fuck it.
+    m_SpawnerPhase4.SetRareBullet("content/textures/spr_easteregg.png", 5.0f, 3.0f, 0.0f, 66);
     //m_SpawnerPhase4.SetBulletSound("snd_bullet_spiral_01.wav");
 
     // Start on phase 1

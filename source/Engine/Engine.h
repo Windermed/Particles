@@ -174,6 +174,7 @@ public:
 	bool m_showText = false; // displays text on screen.
 	bool m_showDebugText = false; // displays text on screen.
 	bool m_bIsZeroGravityOn = false; // toggle for zero gravity.
+	bool m_bIsParticleMsgShowing = true;
 
 	/* DEBUGGING */
 	bool m_bShowCollision = false;
@@ -220,6 +221,8 @@ private:
 	GameText m_hintText;
 
 	GameText m_attackNameText;
+
+	GameText m_ParticleText;
 
 
 	

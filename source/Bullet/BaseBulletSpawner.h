@@ -58,6 +58,7 @@ public:
 	void SetSpawnYPositions(vector<int> positions)
 	{
 		m_spawnY = positions;
+		m_bUseCustomY = true;
 	}
 
 	void ResetBaseSettings()
@@ -250,6 +251,9 @@ protected:
 	/* sets up how many bullets are allowed to spawn per interval. */
 	/* change this to more than 1 if you want bursts. */
 	int m_BulletCount = 1;
+
+	/* WHETHER OR NOT TO ALLOW FIXED Y VALUES */
+	bool m_bUseCustomY = false;
 
 	//where we want the bullets to spawn from.
 	SpawnDirection m_spawnDirection = SpawnDirection::FromTop; // by default.

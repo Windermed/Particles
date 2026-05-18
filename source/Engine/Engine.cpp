@@ -53,10 +53,13 @@ Engine::Engine()
 	m_hintText = GameText("Press Z to shoot!", 48, Color::Yellow, false);
 	m_hintText.CenterAtY(SCREEN_HEIGHT / 2.0f + 200.0f);
 
-
 	/* BULLET HELL DEBUG HUD */
 	m_attackNameText = GameText("", 36, Color(255, 255, 0, 120), false);
 	m_attackNameText.CenterAtY(SCREEN_HEIGHT - 60.0f);
+
+	// PARTICLE TEXT.
+	m_ParticleText = GameText("Click anywhere to Spawn particles!\n\n Press Space to Toggle Zero Gravity.");
+	m_ParticleText.CenterAtY(SCREEN_HEIGHT - 110.0f);
 
 	// setup the icon.
 	Image icon;
@@ -65,6 +68,8 @@ Engine::Engine()
 		m_Window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 	}
 
+	
+	
 	// default attack when selecting bullet hell.
 	m_activeSpawner = new BaseBulletSpawner();
 	//m_activeSpawner->SetInfinite(true);
@@ -147,6 +152,7 @@ void Engine::Input()
 		// mouse input for particles.
 		if (m_gameMode == GameMode::Particles && event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left)
 		{
+			m_bIsParticleMsgShowing = false;
 			if (event.mouseButton.button == Mouse::Left) // mouse left click
 			{
 				Vector2i clickPos(event.mouseButton.x, event.mouseButton.y);
@@ -354,14 +360,19 @@ void Engine::UpdateParticleBulletCollision(float dt)
 				Message("successfully hit!");
 
 				// did we hit a rare bullet? 
-				int points = m_particles[pi].IsRareBullet() ? 50 : 10;
+				int points = m_particles[pi].IsRareBullet() ? 66 : 10; // todo: get ACTUAL rare score.
 				AddScore(points);
 
 				if (m_particles[pi].IsRareBullet())
 				{
 					Message("You shot a rare bullet!");
+					SoundManager::GetInstance().PlaySound("snd_bullet_hit_special_01.wav", 45.0f);
+
 				}
-				SoundManager::GetInstance().PlaySound("snd_bullet_hit_01.wav", 15.0f);
+				else
+				{
+					SoundManager::GetInstance().PlaySound("snd_bullet_hit_01.wav", 15.0f);
+				}
 				
 				bulletsToRmove.push_back(bi);
 				particlesToRemove.push_back(pi);
@@ -545,12 +556,21 @@ void Engine::DrawParticles()
 {
 	for (const Particle& p : m_particles) // for every particle, draw it.
 		m_Window.draw(p);
-
+	
+	
 	if (m_showDebugText) // display debug text.
 	{
 		m_debugText.CenterText(m_debugText.getLocalBounds());
 		m_Window.draw(m_debugText);
+		
 	}
+
+	if (m_bIsParticleMsgShowing)
+	{
+		m_ParticleText.DrawText();
+	}
+
+	
 }
 
 void Engine::DrawBulletHell()
