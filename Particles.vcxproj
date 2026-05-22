@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -110,13 +110,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\SFML\Include;$(ProjectDir)Source;$(ProjectDir)Source\Engine;$(ProjectDir)Source\Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\SFML\Include;$(ProjectDir)Source;$(ProjectDir)Source\Engine;$(ProjectDir)Source\Core;C:\SFML\2.5.1\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\SFML\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\SFML\2.5.1\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-network-d.lib;sfml-audio-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
@@ -132,7 +132,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\SFML\Include;$(ProjectDir)Source;$(ProjectDir)Source\Engine;$(ProjectDir)Source\Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\SFML\Include;$(ProjectDir)Source;$(ProjectDir)Source\Engine;$(ProjectDir)Source\Core;C:\SFML\2.5.1\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -140,7 +140,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\SFML\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\SFML\2.5.1\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;sfml-network.lib;sfml-audio.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
@@ -164,7 +164,10 @@ xcopy /Y /E "$(ProjectDir)content\" "$(OutDir)content\"</Command>
     <ClCompile Include="source\Sounds\SoundManager.cpp" />
     <ClCompile Include="source\Bullet\BaseBulletSpawner.cpp" />
     <ClCompile Include="source\Textures\GameSprite.cpp" />
-  <ClCompile Include="source\Bullet\Spawners\SpiralBulletSpawner.cpp" /><ClCompile Include="source\Bullet\Attacks\Bullet_AttackTest.cpp" /><ClCompile Include="source\Bullet\Attacks\Bullet_AttackDemo.cpp" /></ItemGroup>
+    <ClCompile Include="source\Bullet\Spawners\SpiralBulletSpawner.cpp" />
+    <ClCompile Include="source\Bullet\Attacks\Bullet_AttackTest.cpp" />
+    <ClCompile Include="source\Bullet\Attacks\Bullet_AttackDemo.cpp" />
+  </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Core\Constants.h" />
     <ClInclude Include="source\Engine\Engine.h" />
@@ -177,7 +180,10 @@ xcopy /Y /E "$(ProjectDir)content\" "$(OutDir)content\"</Command>
     <ClInclude Include="source\Sounds\SoundManager.h" />
     <ClInclude Include="source\Bullet\BaseBulletSpawner.h" />
     <ClInclude Include="source\Textures\GameSprite.h" />
-  <ClInclude Include="source\Bullet\Spawners\SpiralBulletSpawner.h" /><ClInclude Include="source\Bullet\Attacks\Bullet_AttackTest.h" /><ClInclude Include="source\Bullet\Attacks\Bullet_AttackDemo.h" /></ItemGroup>
+    <ClInclude Include="source\Bullet\Spawners\SpiralBulletSpawner.h" />
+    <ClInclude Include="source\Bullet\Attacks\Bullet_AttackTest.h" />
+    <ClInclude Include="source\Bullet\Attacks\Bullet_AttackDemo.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
