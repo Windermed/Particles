@@ -14,6 +14,7 @@ public:
 	// our default GameSprite constructor
 	GameSprite() : Sprite(m_texture)
 	{
+		//(void);
 		Load("content/textures/spr_placeholder.png"); // loads a default sprite.
 	}
 

@@ -242,6 +242,12 @@ private:
 	int m_score = 0;
 	int m_highScore = 0;
 
+	/* DELTA TIME */
+	float m_dt = 0.0f;
+
+	/* PARTICLE TIMER */
+	float m_holdSpawnTimer = 0.0f;
+	float m_holdSpawnInterval = 0.0001f; // delay between spawns while holding.
 
 	/* MENU */
 	float m_menuSpawnTimer = 0.0f;

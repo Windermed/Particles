@@ -1,9 +1,6 @@
 #include "Particle.h"
 #include "Engine.h"
 
-
-
-
 Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition, Engine* owningEngine) : m_A(2, numPoints), m_engine(owningEngine)
 {
     this->m_ttl = TTL;
@@ -55,11 +52,14 @@ void Particle::draw(RenderTarget& target, RenderStates states) const
     /* FOR EXTRA STUFF ONLY */
     if (m_bUseSprite)
     {
-        target.draw(m_sprite);
+        if (m_sprite)
+            target.draw(*m_sprite);
+
         return;
     }
 
-    VertexArray lines(PrimitiveType::TriangleFan, m_numPoints + 1);
+    m_lines.setPrimitiveType(PrimitiveType::TriangleFan);
+    m_lines.resize(m_numPoints + 1);
     
     // Maps Cartesian Coordinates to screen coords. it will then translate the origin to the center of screen
     // after that, it will flip the y-axis so positive y will point upwards.
@@ -70,19 +70,19 @@ void Particle::draw(RenderTarget& target, RenderStates states) const
     states.transform = transform;
 
     // Use Cartesian coordinates directly
-    lines[0].position = m_centerCoordinate;
-    lines[0].color = m_color1;
+    m_lines[0].position = m_centerCoordinate;
+    m_lines[0].color = m_color1;
 
     // assigns each outer vertex its cartesian position from m_A and applies the particle's secondary color.
     for(int j = 1; j <= m_numPoints; j++)
     {
         
-        lines[j].position = Vector2f((float)m_A(0, j - 1), (float)m_A(1, j - 1));
-        lines[j].color = m_color2;
+        m_lines[j].position = Vector2f((float)m_A(0, j - 1), (float)m_A(1, j - 1));
+        m_lines[j].color = m_color2;
     }
 
     // draw
-    target.draw(lines, states);
+    target.draw(m_lines, states);
 
     // if we enable to show collision for particles.
     if (m_bShowCollision) // please i need thissss. my collision is kinda homeless.
@@ -122,7 +122,10 @@ void Particle::Update(float dt)
 
         float px = m_centerCoordinate.x + 960.0f;
         float py = 540.0f - m_centerCoordinate.y;
-        m_sprite.setPosition({ px, py });
+
+        if (m_sprite)
+            m_sprite->setPosition({ px, py });
+
         return;
     }
 
@@ -323,7 +326,7 @@ float Particle::GetBoundingRadius() const
     // just so that the sprite's collision isn't awkwardly huge.
     if (m_bUseSprite)
     {
-        Vector2f size = m_sprite.GetSize();
+        Vector2f size = m_sprite->GetSize();
         return max(size.x, size.y) / 2.0f;
     }
 

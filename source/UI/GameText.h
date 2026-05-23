@@ -1,4 +1,6 @@
 #pragma once
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Time.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Font.hpp>
@@ -83,6 +85,8 @@ public:
 		return m_font;
 	}
 
+	static Color HueToColor(float hue);
+
 	// just to simply things.
 	void DrawText();
 
@@ -142,6 +146,24 @@ public:
 
 	bool IsTextFlashing() const { return m_bIsTextFlashing; }
 
+	// sets a rainbow wave color effect to text.
+	void SetRainbowEffect(bool bEnabled)
+	{
+		m_bRainbowEffect = bEnabled;
+		
+		if (bEnabled)
+		{
+			m_rainbowClock.restart();
+		}
+		if (!bEnabled)
+		{
+			// if we've disabled this, we'll clear the preprocessor and restore the OG color.
+			setGlyphPreProcessor(nullptr);
+		}
+
+	}
+
+	bool IsRainbowEffect() const { return m_bRainbowEffect; }
 
 	// Updates String and you can optionally re center it.
 	//void SetText(String text, bool bRecenterText = false);
@@ -172,5 +194,11 @@ private:
 	float m_flashDuration = -1.0f;
 
 	float m_elapsedTime = 0.0f;
+
+	// enable a rainbow effect to text.
+	bool m_bRainbowEffect = false;
+
+	// the rainbow timer.
+	Clock m_rainbowClock;
 };
 

@@ -27,6 +27,7 @@ Engine::Engine()
 	m_menuDesc = GameText("Select the mode you want to try", 36, Color(200, 200, 200, 255), false);
 	m_menuOptions = GameText("[1] Particles\n\n[2] Bullet Hell",48, Color::Green, false);
 	m_menuTitle.CenterAtY(SCREEN_HEIGHT / 2.0f - 200.0f);
+	m_menuTitle.SetRainbowEffect(true);
 	m_menuDesc.CenterAtY(SCREEN_HEIGHT / 2.0f - 100.0f);
 	m_menuOptions.CenterAtY(SCREEN_HEIGHT / 2.0f + 50.0f);
 	
@@ -183,16 +184,26 @@ void Engine::Input()
 				if (mouseEvent->button == Mouse::Button::Left) // mouse left click
 				{
 					m_bIsParticleMsgShowing = false;
-					Vector2i clickPos(mouseEvent->position.x, mouseEvent->position.y);
-					SpawnParticleBurst(clickPos, 5);
+					if (m_particles.size() < 50) // particle cap
+					{
+						Vector2i clickPos(mouseEvent->position.x, mouseEvent->position.y);
+						SpawnParticleBurst(clickPos, 5);
+					}
+					
 				}
 			}
 		}
+	}
 
-		if (m_gameMode == GameMode::Particles && Mouse::isButtonPressed(Mouse::Button::Left)) // allows for multiple particles to be spawned as you hold left.
+	if (m_gameMode == GameMode::Particles && Mouse::isButtonPressed(Mouse::Button::Left)) // allows for multiple particles to be spawned as you hold left.
+	{
+		m_holdSpawnTimer += m_dt;
+		if (m_holdSpawnTimer >= m_holdSpawnInterval && m_particles.size() < 150)
 		{
 			SpawnParticle(Mouse::getPosition(m_Window));
+			m_holdSpawnTimer = 0.0f;
 		}
+
 	}
 }
 
@@ -200,6 +211,8 @@ void Engine::Input()
 void Engine::Update(float dtAsSeconds)
 {
 	// EXPERIMENTAL.
+	m_dt = dtAsSeconds;
+
 	if (m_gameMode == GameMode::Menu)
 	{
 		//Spawn particles from random positions
