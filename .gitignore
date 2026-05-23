@@ -29,6 +29,9 @@ _deps/
 cmake_install.cmake
 CMakePresets.json
 
+# Misc
+*.lnk
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
