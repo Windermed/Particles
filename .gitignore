@@ -20,6 +20,18 @@ mono_crash.*
 RefreshProject.bat
 Scripts/
 
+# CMake
+build/
+CMakeFiles/
+CMakeCache.txt
+*.cmake
+_deps/
+out/
+cmake_install.cmake
+CMakePresets.json
+
+# Misc
+*.lnk
 
 # Build results
 [Dd]ebug/
