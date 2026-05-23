@@ -28,9 +28,9 @@ private:
 private:
 
 	map<string, SoundBuffer> m_buffers;
-	map<string, Sound> m_sounds;
+	map<string, unique_ptr<Sound>> m_sounds;
 
-	map<string, vector<Sound>> m_soundPool;
+	map<string, vector<unique_ptr<Sound>>> m_soundPool;
 	map<string, int> m_poolIndex;
 };
 

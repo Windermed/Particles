@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include <fstream>
 #include "Player/Player.h"
 #include "Sounds/SoundManager.h"
 #include "Bullet/Spawners/SpiralBulletSpawner.h"
@@ -11,29 +12,49 @@ Engine* Engine::EngineInstance = nullptr;
 
 Engine::Engine()
 {
+
 	Image icon;
 	float titleY = SCREEN_HEIGHT / 2.0f - 200.0f;
 	float subtitleY = SCREEN_HEIGHT / 2.0f - 100.0f;
 	std::string versionType = "ERROR"; // nvm prob not gonna do this so it doesnt break on linux.
 
+	// start seeding
+	srand(static_cast<unsigned int>(time(nullptr)));
+
 	// locking it to 1080p as its annoying to work on a widescreen monitor.
-	m_Window.create(VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Particles", Style::Default);
+	m_Window.create(VideoMode({ (unsigned int)SCREEN_WIDTH, (unsigned int)SCREEN_HEIGHT }), "Particles", Style::Default);
 	m_Player = new Player(); // we will need to use a pointer for our player.
 
 	// seting up UI
 
+
+	// load splash screen text from file
+	ifstream splashFile("content/splashes.txt");
+	if (splashFile.is_open())
+	{
+		string line;
+		while (getline(splashFile, line))
+		{
+			if (!line.empty())
+			{
+				m_splashes.push_back(line);
+			}
+		}
+	}
+
 	// MENU
 	m_menuTitle = GameText("Particles", 96, Color::White, false);
-	m_menuDesc = GameText("Select the mode you want to try", 36, Color(200, 200, 200, 255), false);
-	m_menuOptions = GameText("[1] Particles\n\n[2] Bullet Hell",48, Color::Green, false);
+	RefreshSplashText();
+	m_menuDesc = GameText("Select the mode you want to try", 40, Color(200, 200, 200, 255), false);
+	m_menuOptions = GameText("[1] Particles\n\n[2] Bullet Hell", 48, Color::Green, false);
 	m_menuTitle.CenterAtY(SCREEN_HEIGHT / 2.0f - 200.0f);
-	m_menuDesc.CenterAtY(SCREEN_HEIGHT / 2.0f - 100.0f);
+	m_menuTitle.SetRainbowEffect(true);
+	m_menuDesc.CenterAtY(SCREEN_HEIGHT / 2.0f - 65.0f);
 	m_menuOptions.CenterAtY(SCREEN_HEIGHT / 2.0f + 50.0f);
 	
-	// lowkey feel like a skid writing this LMAOO
 	
-	//m_menuVersion = GameText("v1.0 | dev ", 24, Color(150, 150, 150, 255), false); // skids after making project styrofoam or whatever
-	m_menuVersion = GameText("windermed", 24, Color(150, 150, 150, 255), false);
+	//m_menuVersion = GameText("v1.0 | dev ", 24, Color(150, 150, 150, 255), false);
+	m_menuVersion = GameText("v1.1 | windermed", 24, Color(150, 150, 150, 255), false);
 	m_menuVersion.CenterAtY(SCREEN_HEIGHT - 40.0f);
 
 	// WIN TEXT
@@ -57,12 +78,12 @@ Engine::Engine()
 	// SCORE TEXT
 	m_scoreText = GameText("Score: 0", 36, Color::White, false);
 	m_highScoreText = GameText("Best: 0", 36, Color::White, false);
-	m_scoreText.setPosition(20.0f, 20.0f);
-	m_highScoreText.setPosition(20.0f, 60.0f);
+	m_scoreText.setPosition({ 20.0f, 20.0f });
+	m_highScoreText.setPosition({ 20.0f, 60.0f });
 
 	// LIVES TEXT.
 	m_livesText = GameText("HP: 3", 36, Color::White, false);
-	m_livesText.setPosition(20.0f, 100.0f);
+	m_livesText.setPosition({ 20.0f, 100.0f });
 
 	// HINT TEXT.
 	m_hintText = GameText("Press Z to shoot!", 48, Color::Yellow, false);
@@ -77,7 +98,7 @@ Engine::Engine()
 	m_ParticleText.CenterAtY(SCREEN_HEIGHT - 110.0f);
 	if (icon.loadFromFile(ICON_PATH))
 	{
-		m_Window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+		m_Window.setIcon(icon.getSize(), icon.getPixelsPtr());
 	}
 
 	
@@ -121,36 +142,36 @@ Player& Engine::GetPlayer()
 
 void Engine::Input()
 {
-	Event event;
+	// sf event no longer uses a default constructor in 3.1 so we will do something else instead.
 
 	// INPUTS.
-	while (m_Window.pollEvent(event))
+	while (const auto event = m_Window.pollEvent())
 	{
-		if (event.type == Event::Closed)
+		if (event->is<Event::Closed>())
 			m_Window.close();
 
-		if (event.type == Event::KeyPressed)
+		if (const auto* keyEvent = event->getIf<Event::KeyPressed>())
 		{
-			m_lastKeyPressed = event.key.code;
+			m_lastKeyPressed = keyEvent->code;
 
 			// closes window on escape.
-			if (event.key.code == Keyboard::Escape)
+			if (keyEvent->code == Keyboard::Key::Escape)
 				m_Window.close();
 
 			if (m_GameState == GameState::Win || m_GameState == GameState::GameOver)
 			{
 				switch (m_lastKeyPressed)
 				{
-				case Keyboard::R:
+				case Keyboard::Key::R:
 					if (m_bGauntletMode)
 						StartGauntlet(); // if the game ends and we want to restart in gauntlet, restart gauntlet.
 					else
 						SetGameMode(GameMode::BulletHell); // if not, just start up the game as normal.
 					break;
-				case Keyboard::M:
+				case Keyboard::Key::M:
 					SetGameMode(GameMode::Menu);
 					break;
-				case Keyboard::E:
+				case Keyboard::Key::E:
 					if (!m_bGauntletMode)
 						StartGauntlet(); // if we're not already in gauntlet, start it up.
 					else
@@ -161,29 +182,48 @@ void Engine::Input()
 
 			//  key input for each specific mode
 			if (m_gameMode == GameMode::Menu)
-				InputMenu();
-			else if (m_gameMode == GameMode::Particles)
-				InputParticles(event);
-
-			else if (m_gameMode == GameMode::BulletHell)
-				InputBulletHell();
-		}
-
-		// mouse input for particles.
-		if (m_gameMode == GameMode::Particles && event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left)
-		{
-			m_bIsParticleMsgShowing = false;
-			if (event.mouseButton.button == Mouse::Left) // mouse left click
 			{
-				Vector2i clickPos(event.mouseButton.x, event.mouseButton.y);
-				SpawnParticleBurst(clickPos, 5);
+				InputMenu();
+			}
+			else if (m_gameMode == GameMode::Particles)
+			{
+				if (const auto* kp = event->getIf<Event::KeyPressed>())
+					InputParticles(*kp);
+			}
+			else if (m_gameMode == GameMode::BulletHell)
+			{
+				InputBulletHell();
+			}
+
+		}
+		// mouse input for particles.
+		if (m_gameMode == GameMode::Particles)
+		{
+			if (const auto* mouseEvent = event->getIf<Event::MouseButtonPressed>())
+			{
+				if (mouseEvent->button == Mouse::Button::Left) // mouse left click
+				{
+					m_bIsParticleMsgShowing = false;
+					if (m_particles.size() < 50) // particle cap
+					{
+						Vector2i clickPos(mouseEvent->position.x, mouseEvent->position.y);
+						SpawnParticleBurst(clickPos, 5);
+					}
+					
+				}
 			}
 		}
+	}
 
-		if (m_gameMode == GameMode::Particles && Mouse::isButtonPressed(Mouse::Left)) // allows for multiple particles to be spawned as you hold left.
+	if (m_gameMode == GameMode::Particles && Mouse::isButtonPressed(Mouse::Button::Left)) // allows for multiple particles to be spawned as you hold left.
+	{
+		m_holdSpawnTimer += m_dt;
+		if (m_holdSpawnTimer >= m_holdSpawnInterval && m_particles.size() < 150)
 		{
 			SpawnParticle(Mouse::getPosition(m_Window));
+			m_holdSpawnTimer = 0.0f;
 		}
+
 	}
 }
 
@@ -191,6 +231,8 @@ void Engine::Input()
 void Engine::Update(float dtAsSeconds)
 {
 	// EXPERIMENTAL.
+	m_dt = dtAsSeconds;
+
 	if (m_gameMode == GameMode::Menu)
 	{
 		//Spawn particles from random positions
@@ -234,7 +276,7 @@ void Engine::Update(float dtAsSeconds)
 		{
 			m_hintText.UpdateFlash(dtAsSeconds);
 			
-			if (m_hintText.IsTextFlashing() && Keyboard::isKeyPressed(Keyboard::Z))
+			if (m_hintText.IsTextFlashing() && Keyboard::isKeyPressed(Keyboard::Key::Z))
 			{
 				HideHint();
 			}
@@ -403,6 +445,11 @@ void Engine::SetGameMode(GameMode gameMode)
 	if (gameMode != GameMode::Menu)
 	{
 		m_particles.clear();
+
+	}
+	else if (gameMode == GameMode::Menu)
+	{
+		RefreshSplashText(); // refresh splash text whenever we go back to the title screen.
 	}
 	if (gameMode == GameMode::BulletHell)
 	{
@@ -437,10 +484,10 @@ void Engine::UpdateParticleBulletCollision(float dt)
 			float px = m_particles[pi].GetCenter().x + 960.0f;
 			float py = 540.0f - m_particles[pi].GetCenter().y;
 
-			FloatRect particleRounds(px - m_particles[pi].GetBoundingRadius(), py - m_particles[pi].GetBoundingRadius(), m_particles[pi].GetBoundingRadius() * 2.0f, m_particles[pi].GetBoundingRadius() * 2.0f);
+			FloatRect particleRounds({ px - m_particles[pi].GetBoundingRadius(), py - m_particles[pi].GetBoundingRadius() }, { m_particles[pi].GetBoundingRadius() * 2.0f, m_particles[pi].GetBoundingRadius() * 2.0f });
 
 			// if player bullet hits particle.
-			if (bullets[bi].GetBounds().intersects(particleRounds))
+			if (bullets[bi].GetBounds().findIntersection(particleRounds))
 			{
 				Message("successfully hit!");
 
@@ -597,11 +644,11 @@ void Engine::InputMenu()
 {
 	switch (m_lastKeyPressed)
 	{
-	case Keyboard::Num1: // sets gamemode to particles (OG Project)
+	case Keyboard::Key::Num1: // sets gamemode to particles (OG Project)
 		SetGameMode(GameMode::Particles);
 		break;
 		break;
-	case Keyboard::Num2:
+	case Keyboard::Key::Num2:
 		SetGameMode(GameMode::BulletHell); // sets gamemode to bullet hell
 		break;
 	default:
@@ -609,11 +656,11 @@ void Engine::InputMenu()
 	}
 }
 
-void Engine::InputParticles(Event& event)
+void Engine::InputParticles(const Event::KeyPressed& event)
 {
 	switch (m_lastKeyPressed)
 	{
-	case Keyboard::Space: // toggles gravity for particles.
+	case Keyboard::Key::Space: // toggles gravity for particles.
 		m_showDebugText = !m_showDebugText; // displays text.
 		m_bIsZeroGravityOn = !m_bIsZeroGravityOn;
 
@@ -623,7 +670,7 @@ void Engine::InputParticles(Event& event)
 		}
 		break;
 
-	case Keyboard::M: // returns to menu.
+	case Keyboard::Key::M: // returns to menu.
 		SetGameMode(GameMode::Menu);
 		break;
 	default:
@@ -635,42 +682,42 @@ void Engine::InputBulletHell()
 {
 	switch (m_lastKeyPressed)
 	{
-	case Keyboard::M: // return to menu.
+	case Keyboard::Key::M: // return to menu.
 		SetGameMode(GameMode::Menu);
 		break;
 
-	case Keyboard::Tab: // cycles between different player modes.
+	case Keyboard::Key::Tab: // cycles between different player modes.
 		m_Player->CyclePlayerMode();
 		break;
 
-	case Keyboard::G: // toggles god mode (DEVELOPER ONLY)
+	case Keyboard::Key::G: // toggles god mode (DEVELOPER ONLY)
 		m_Player->ToggleGodMode();
 		break;
-	case Keyboard::Num1: // temp
+	case Keyboard::Key::Num1: // temp
 		delete m_activeSpawner;
 		m_activeSpawner = new Bullet_AttackDemo();
 		m_activeSpawner->Reset();
 		m_particles.clear();
 		UpdateAttackNameText();
 		break;
-	case Keyboard::Num2:
+	case Keyboard::Key::Num2:
 		delete m_activeSpawner;
 		m_activeSpawner = new BaseBulletSpawner();
 		m_activeSpawner->Reset();
 		m_particles.clear();
 		UpdateAttackNameText();
 		break;
-	case Keyboard::Num3:
+	case Keyboard::Key::Num3:
 		delete m_activeSpawner;
 		m_activeSpawner = new Bullet_AttackTest();
 		m_activeSpawner->Reset();
 		m_particles.clear();
 		UpdateAttackNameText();
 		break;
-	case Keyboard::F1: // PLEASE TELL ME THIS IS IT.
+	case Keyboard::Key::F1: // PLEASE TELL ME THIS IS IT.
 		ToggleCollisionDebug();
 		break;
-	case Keyboard::F2:
+	case Keyboard::Key::F2:
 		if (auto* demo = dynamic_cast<Bullet_AttackDemo*>(m_activeSpawner))
 		{
 			demo->TransitionToPhase(AttackDemoPhase::Phase4);

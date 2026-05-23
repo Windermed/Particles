@@ -1,6 +1,9 @@
 #pragma once
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Time.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/Font.hpp>
 #include "Constants.h"
 
 using namespace sf; // so thats why 
@@ -13,30 +16,76 @@ class GameText : public Text
 {
 
 public:
-	// our default constructor for GameTExt.
-	GameText();
 
-	// in case you just need to set the text only.
-	GameText(String text);
+	// our default constructor for GameText.
+	GameText::GameText() : Text(GetFont())
+	{
+		// default values for our game text.
+		Init("Meet Potential Framework!", Vector2f(0, 0), 36, Color::White);
+	}
 
 	// if you want to set the text AND position.
-	GameText(String text, Vector2f position);
+	GameText::GameText(String text) : Text(GetFont())
+	{
+		Init(text, Vector2f(0, 0), 36, Color::White);
+	}
 
-	// if too, you want to do the same as above but configure the font size.
-	GameText(String text, Vector2f position, unsigned int fontSize);
+	// text + position (on screen) constructor. useful if you want to set the text AND position.
+	GameText::GameText(String text, Vector2f position) : Text(GetFont())
+	{
+		Init(text, position, 36, Color::White);
+	}
 
-	// if you want to do the same as above but configure the font size.
-	GameText(String text, Vector2f position, unsigned int fontSize, Color color);
+	// text + position (screen) + text size constructor. useful if you want to do the same as above but configure the font size.
+	GameText::GameText(String text, Vector2f position, unsigned int fontSize) : Text(GetFont())
+	{
+		Init(text, position, fontSize, Color::White);
+	}
 
-	// if you want to set text but want to disregard the position.
-	GameText(String text, unsigned int fontSize, Color color, bool bIsTextCentered);
+	// text + position (screen) + text size + text color constructor. useful if you want to do the same as above but configure the font size.
+	GameText::GameText(String text, Vector2f position, unsigned int fontSize, Color color) : Text(GetFont())
+	{
+		Init(text, position, fontSize, color);
+	}
 
-	// if you too, want to do the same as above but also center the text.
-	GameText(String text, Vector2f position, unsigned int fontSize, Color color, bool bIsTextCentered);
+	// text + font size, text color, text is centered ahh constructor. useful if you want to set text but want to disregard the position.
+	GameText::GameText(String text, unsigned int fontSize, Color color, bool bIsTextCentered) : Text(GetFont())
+	{
+		Init(text, Vector2f(0, 0), fontSize, color);
 
-	
+		if (bIsTextCentered)
+			CenterText(getLocalBounds());
+	}
+
+	// text + position (screen) + text size + text color + center text constructor. useful if you want to do the same as above but also center the text.
+	GameText::GameText(String text, Vector2f position, unsigned int fontSize, Color color, bool bIsTextCentered) : Text(GetFont())
+	{
+		Init(text, position, fontSize, color);
+
+		if (bIsTextCentered)
+		{
+			CenterText(this->getLocalBounds());
+		}
+	}
 
 public:
+
+	// get font
+	static Font& GetFont()
+	{
+		if (!m_bIsFontLoaded)
+		{
+			if (!m_font.openFromFile(FONT_PATH))
+			{
+				throw runtime_error("Font has failed to load!");
+			}
+
+			m_bIsFontLoaded = true;
+		}
+		return m_font;
+	}
+
+	static Color HueToColor(float hue);
 
 	// just to simply things.
 	void DrawText();
@@ -97,6 +146,24 @@ public:
 
 	bool IsTextFlashing() const { return m_bIsTextFlashing; }
 
+	// sets a rainbow wave color effect to text.
+	void SetRainbowEffect(bool bEnabled)
+	{
+		m_bRainbowEffect = bEnabled;
+		
+		if (bEnabled)
+		{
+			m_rainbowClock.restart();
+		}
+		if (!bEnabled)
+		{
+			// if we've disabled this, we'll clear the preprocessor and restore the OG color.
+			setGlyphPreProcessor(nullptr);
+		}
+
+	}
+
+	bool IsRainbowEffect() const { return m_bRainbowEffect; }
 
 	// Updates String and you can optionally re center it.
 	//void SetText(String text, bool bRecenterText = false);
@@ -105,8 +172,8 @@ public:
 	void CenterAtY(float y)
 	{
 		FloatRect bounds = getLocalBounds();
-		setOrigin(bounds.left + bounds.width / 2.0f, bounds.top + bounds.height / 2.0f);
-		setPosition(SCREEN_WIDTH / 2.0f, y);
+		setOrigin({ bounds.position.x + bounds.size.x / 2.0f, bounds.position.y + bounds.size.y / 2.0f });
+		setPosition({ SCREEN_WIDTH / 2.0f, y });
 	}
 
 private:
@@ -127,5 +194,11 @@ private:
 	float m_flashDuration = -1.0f;
 
 	float m_elapsedTime = 0.0f;
+
+	// enable a rainbow effect to text.
+	bool m_bRainbowEffect = false;
+
+	// the rainbow timer.
+	Clock m_rainbowClock;
 };
 

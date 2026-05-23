@@ -12,13 +12,14 @@ class GameSprite : public Sprite
 {
 public:
 	// our default GameSprite constructor
-	GameSprite() 
+	GameSprite() : Sprite(m_texture)
 	{
+		//(void);
 		Load("content/textures/spr_placeholder.png"); // loads a default sprite.
 	}
 
 	// copy constructor as sf::Texture doesn't copy well.
-	GameSprite(const GameSprite& other)
+	GameSprite(const GameSprite& other) : Sprite(m_texture)
 	{
 		m_filename = other.m_filename;
 		m_bIsLoaded = other.m_bIsLoaded;
@@ -28,13 +29,13 @@ public:
 		{
 			// reload textures
 			m_texture.loadFromFile(m_filename);
-			setTexture(m_texture);
+			setTexture(m_texture, true);
 			CenterOrigin();
 
 			// once reloaded, we preserve the OG transform.
 			setPosition(other.getPosition());
 			setScale(other.getScale());
-			setRotation(other.getRotation());
+			setRotation(sf::degrees(other.getRotation().asDegrees()));
 		}
 	}
 	
@@ -51,29 +52,29 @@ public:
 			{
 				// reload a texture so this instance can have it's own texture reference.
 				m_texture.loadFromFile(m_filename);
-				setTexture(m_texture);
+				setTexture(m_texture, true);
 				CenterOrigin();
 
 				// again, we will preserve the OG transform.
 				setPosition(other.getPosition());
 				setScale(other.getScale());
-				setRotation(other.getRotation());
+				setRotation(sf::degrees(other.getRotation().asDegrees()));
 			}
 		}
 		return *this;
 	}
 
 	// constructor that loads from file.
-	GameSprite(const string& filename) { Load(filename); }
+	GameSprite(const string& filename) : Sprite(m_texture) { Load(filename); }
 
 	// load with position.
-	GameSprite(const string& filename, Vector2f position)
+	GameSprite(const string& filename, Vector2f position) : Sprite(m_texture)
 	{
 		Load(filename);
 		setPosition(position);
 	}
 
-	GameSprite(const string& filename, Vector2f position, Vector2f scale)
+	GameSprite(const string& filename, Vector2f position, Vector2f scale) : Sprite(m_texture)
 	{
 		Load(filename);
 		setPosition(position);
@@ -81,12 +82,12 @@ public:
 	}
 
 	// load with position scale and rotation.
-	GameSprite(const string& filename, Vector2f position, Vector2f scale, float rotation)
+	GameSprite(const string& filename, Vector2f position, Vector2f scale, float rotation) : Sprite(m_texture)
 	{
 		Load(filename);
 		setPosition(position);
 		setScale(scale);
-		setRotation(rotation);
+		setRotation(sf::degrees(rotation));
 	}
 
 	// easily load textures from a file.
@@ -102,7 +103,7 @@ public:
 			return m_bIsLoaded;
 		}
 
-		setTexture(m_texture);
+		setTexture(m_texture, true);
 		CenterOrigin();
 
 		m_bIsLoaded = true;
@@ -122,23 +123,23 @@ public:
 	void CenterOrigin()
 	{
 		FloatRect bounds = getLocalBounds();
-		setOrigin(bounds.width / 2.0f, bounds.height / 2.0f);
+		setOrigin({ bounds.size.x / 2.0f, bounds.size.y / 2.0f });
 	}
 
 	// allows us to flip horizontally
-	void FlipX() { setScale(-getScale().x, getScale().y); }
+	void FlipX() { setScale({ -getScale().x, getScale().y }); }
 	
 	// flip vertically.
-	void FlipY() { setScale(getScale().x, -getScale().y); }
+	void FlipY() { setScale({ getScale().x, -getScale().y }); }
 
 	// set uniform scale
 	void SetScale(float scale)  //made it take 1 scale for familiarity with other engines i've worked on.
 	{
-		setScale(scale, scale);
+		setScale({ scale, scale });
 	}
 
 	// fade - 0 transparent, 255 opaque
-	void SetOpacity(Uint8 opacity)
+	void SetOpacity(uint8_t opacity)
 	{
 		Color c = getColor();
 		c.a = opacity;
@@ -146,10 +147,10 @@ public:
 	}
 
 	// pulse opacity for effects we could do.
-	void Pulse(float timer, Uint8 minOpacity = 80, Uint8 maxOpacity = 255)
+	void Pulse(float timer, uint8_t minOpacity = 80, uint8_t maxOpacity = 255)
 	{
 		float t = (sin(timer) + 1.0f) / 2.0f;
-		Uint8 val = (Uint8)(minOpacity + (maxOpacity - minOpacity) * t);
+		uint8_t val = (uint8_t)(minOpacity + (maxOpacity - minOpacity) * t);
 		SetOpacity(val);
 	}
 
@@ -160,7 +161,7 @@ public:
 	Vector2f GetSize() const
 	{
 		FloatRect b = getLocalBounds();
-		return Vector2f(b.width * getScale().x, b.height * getScale().y);
+		return Vector2f(b.size.x * getScale().x, b.size.y * getScale().y);
 	}
 
 private:

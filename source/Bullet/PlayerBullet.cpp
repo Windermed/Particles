@@ -23,11 +23,11 @@ PlayerBullet::PlayerBullet(Vector2f position, Vector2f direction)
 	m_shape.setOutlineThickness(1.0f);
 
 	// center origin
-	m_shape.setOrigin(2.0f, 8.0f);
+	m_shape.setOrigin({ 2.0f, 8.0f });
 
 	// rotate to match direction.
 	float angle = atan2(direction.y, direction.x) * 180.0f / 3.14159f;
-	m_shape.setRotation(angle + 90.0f);
+	m_shape.setRotation(degrees(angle + 90.0f));
 
 	m_shape.setPosition(m_position);
 }

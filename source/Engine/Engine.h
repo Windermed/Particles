@@ -1,7 +1,6 @@
 #pragma once
-#pragma once
 #include <SFML/Graphics.hpp>
-#include "Constants.h"
+#include "Core/Constants.h"
 #include "Particle/Particle.h"
 #include "UI/GameText.h"
 #include "Player/Player.h"
@@ -128,6 +127,18 @@ private:
 	void Update(float dtAsSeconds);
 	void Draw();
 
+	/* refreshes the splash text on the title screen. */
+	void RefreshSplashText()
+	{
+		// after loading, we'll pick a random splash text to then display it.
+		if (!m_splashes.empty())
+		{
+			string splash = m_splashes[rand() % m_splashes.size()];
+			m_splashText = GameText(splash, 30, Color::Yellow, false);
+			m_splashText.CenterAtY(SCREEN_HEIGHT / 2.0f - 120.0f);
+		}
+	}
+
 	// spawn particles
 	void SpawnParticle(Vector2i position);
 	void SpawnParticleBurst(Vector2i position, int count = 5);
@@ -145,7 +156,7 @@ private:
 
 	// keybinds for certain menus
 	void InputMenu();
-	void InputParticles(Event& event);
+	void InputParticles(const Event::KeyPressed& event);
 	void InputBulletHell();
 
 	// draw functions of certain function.
@@ -156,6 +167,7 @@ private:
 			m_Window.draw(p);
 
 		m_menuTitle.DrawText();
+		m_splashText.DrawText();
 		m_menuDesc.DrawText();
 		m_menuOptions.DrawText();
 		m_menuVersion.DrawText();
@@ -207,9 +219,11 @@ private:
 
 	/* HUD */
 	GameText m_menuTitle;
+	GameText m_splashText;
 	GameText m_menuDesc;
 	GameText m_menuOptions;
 	GameText m_menuVersion;
+
 
 	GameText m_debugText;
 	GameText m_livesText;
@@ -236,12 +250,19 @@ private:
 	/* TEMPORARY */
 	GameText m_thankYouText;
 	
-
+	/* SPLASH SCREEN */
+	vector<string> m_splashes;
 
 	/* SCORE */
 	int m_score = 0;
 	int m_highScore = 0;
 
+	/* DELTA TIME */
+	float m_dt = 0.0f;
+
+	/* PARTICLE TIMER */
+	float m_holdSpawnTimer = 0.0f;
+	float m_holdSpawnInterval = 0.0001f; // delay between spawns while holding.
 
 	/* MENU */
 	float m_menuSpawnTimer = 0.0f;
@@ -249,7 +270,7 @@ private:
 
 
 	/* Input */
-	Keyboard::Key m_lastKeyPressed = Keyboard::Unknown;
+	Keyboard::Key m_lastKeyPressed = Keyboard::Key::Unknown;
 
 	/* BulletHell Flash Effect.*/
 	RectangleShape m_flashOverlay;

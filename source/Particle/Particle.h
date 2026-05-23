@@ -1,4 +1,5 @@
 #pragma once
+#include <optional>
 #include "Object.h"
 #include "Matrices.h"
 #include "Textures/GameSprite.h"
@@ -54,13 +55,14 @@ public:
     /* EXTRA */
     void SetSprite(const string& spritePath, float scale = 1.0f, float rotation = 0.0f)
     {
-        bool bLoaded = m_sprite.Load(spritePath);
-        m_bUseSprite = bLoaded;
+        // to improve performance, we will only construct GameSprite only when it's needed.
+        m_sprite.emplace(spritePath);
+        m_bUseSprite = m_sprite->IsLoaded();
 
-        if (bLoaded)
+        if (m_bUseSprite)
         {
-            m_sprite.SetScale(scale);
-            m_sprite.setRotation(rotation);
+            m_sprite->SetScale(scale);
+            m_sprite->setRotation(sf::degrees(rotation));
         }
     }
 
@@ -105,7 +107,9 @@ private:
     Matrix m_A;
 
     /* EXTRA */
-    GameSprite m_sprite;
+    std::optional<GameSprite> m_sprite;
     bool m_bUseSprite = false;
     bool m_bIsRareBullet = false;
+
+    mutable VertexArray m_lines;
 };
