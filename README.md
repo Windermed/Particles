@@ -5,10 +5,14 @@ the bullet hell section is heavily inspired by Undertale/Deltarune
 
 <img src="media/github_preview02.png">
 
+# Building
+Note: First build will download and compile SFML 3.1.0 alongside
+it's dependencies with can be a minimum of (~2GB).
+
 ## Build Instructions
 
 ### Windows
-Just open `Particles.sln` using Visual Studio then build.
+Start by running `build.bat` and open `Particles.sln` in the build folder.
 
 ### Linux
 

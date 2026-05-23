@@ -1,0 +1,37 @@
+cmake_minimum_required(VERSION 3.28)
+project(Particles LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include(FetchContent)
+
+FetchContent_Declare(
+	SFML
+	GIT_REPOSITORY https://github.com/SFML/SFML.git
+	GIT_TAG			3.1.0
+)
+
+FetchContent_MakeAvailable(SFML)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+file(GLOB_RECURSE SOURCES "source/*.cpp")
+
+add_executable(Particles ${SOURCES})
+
+add_custom_command(TARGET Particles POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+	$<TARGET_RUNTIME_DLLS:Particles>
+	$<TARGET_FILE_DIR:Particles>
+	COMMAND_EXPAND_LISTS
+)
+
+target_link_libraries(Particles PRIVATE
+	SFML::Graphics
+	SFML::Audio
+	SFML::Window
+	SFML::System
+)
+
+target_include_directories(Particles PRIVATE source)
+

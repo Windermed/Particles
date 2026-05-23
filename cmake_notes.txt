@@ -1,0 +1,9 @@
+cmake command to keep in mind
+
+cmake -B . -G "Visual Studio 17 2022" -A x64
+
+-b <dir> is for the build directory.
+
+-G <visual studio> tells Cmake what build system will it generate files for.
+
+-A <x86/x64> tells CMake to target 64-bit or 32-bit.
