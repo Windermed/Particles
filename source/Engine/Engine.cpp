@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include <fstream>
 #include "Player/Player.h"
 #include "Sounds/SoundManager.h"
 #include "Bullet/Spawners/SpiralBulletSpawner.h"
@@ -11,10 +12,14 @@ Engine* Engine::EngineInstance = nullptr;
 
 Engine::Engine()
 {
+
 	Image icon;
 	float titleY = SCREEN_HEIGHT / 2.0f - 200.0f;
 	float subtitleY = SCREEN_HEIGHT / 2.0f - 100.0f;
 	std::string versionType = "ERROR"; // nvm prob not gonna do this so it doesnt break on linux.
+
+	// start seeding
+	srand(static_cast<unsigned int>(time(nullptr)));
 
 	// locking it to 1080p as its annoying to work on a widescreen monitor.
 	m_Window.create(VideoMode({ (unsigned int)SCREEN_WIDTH, (unsigned int)SCREEN_HEIGHT }), "Particles", Style::Default);
@@ -22,19 +27,34 @@ Engine::Engine()
 
 	// seting up UI
 
+
+	// load splash screen text from file
+	ifstream splashFile("content/splashes.txt");
+	if (splashFile.is_open())
+	{
+		string line;
+		while (getline(splashFile, line))
+		{
+			if (!line.empty())
+			{
+				m_splashes.push_back(line);
+			}
+		}
+	}
+
 	// MENU
 	m_menuTitle = GameText("Particles", 96, Color::White, false);
-	m_menuDesc = GameText("Select the mode you want to try", 36, Color(200, 200, 200, 255), false);
-	m_menuOptions = GameText("[1] Particles\n\n[2] Bullet Hell",48, Color::Green, false);
+	RefreshSplashText();
+	m_menuDesc = GameText("Select the mode you want to try", 40, Color(200, 200, 200, 255), false);
+	m_menuOptions = GameText("[1] Particles\n\n[2] Bullet Hell", 48, Color::Green, false);
 	m_menuTitle.CenterAtY(SCREEN_HEIGHT / 2.0f - 200.0f);
 	m_menuTitle.SetRainbowEffect(true);
-	m_menuDesc.CenterAtY(SCREEN_HEIGHT / 2.0f - 100.0f);
+	m_menuDesc.CenterAtY(SCREEN_HEIGHT / 2.0f - 65.0f);
 	m_menuOptions.CenterAtY(SCREEN_HEIGHT / 2.0f + 50.0f);
 	
-	// lowkey feel like a skid writing this LMAOO
 	
-	//m_menuVersion = GameText("v1.0 | dev ", 24, Color(150, 150, 150, 255), false); // skids after making project styrofoam or whatever
-	m_menuVersion = GameText("windermed", 24, Color(150, 150, 150, 255), false);
+	//m_menuVersion = GameText("v1.0 | dev ", 24, Color(150, 150, 150, 255), false);
+	m_menuVersion = GameText("v1.1 | windermed", 24, Color(150, 150, 150, 255), false);
 	m_menuVersion.CenterAtY(SCREEN_HEIGHT - 40.0f);
 
 	// WIN TEXT
@@ -425,6 +445,11 @@ void Engine::SetGameMode(GameMode gameMode)
 	if (gameMode != GameMode::Menu)
 	{
 		m_particles.clear();
+
+	}
+	else if (gameMode == GameMode::Menu)
+	{
+		RefreshSplashText(); // refresh splash text whenever we go back to the title screen.
 	}
 	if (gameMode == GameMode::BulletHell)
 	{
