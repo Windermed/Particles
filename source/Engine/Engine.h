@@ -145,7 +145,7 @@ private:
 
 	// keybinds for certain menus
 	void InputMenu();
-	void InputParticles(Event& event);
+	void InputParticles(const Event::KeyPressed& event);
 	void InputBulletHell();
 
 	// draw functions of certain function.
@@ -249,7 +249,7 @@ private:
 
 
 	/* Input */
-	Keyboard::Key m_lastKeyPressed = Keyboard::Unknown;
+	Keyboard::Key m_lastKeyPressed = Keyboard::Key::Unknown;
 
 	/* BulletHell Flash Effect.*/
 	RectangleShape m_flashOverlay;

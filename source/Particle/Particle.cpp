@@ -10,8 +10,8 @@ Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosit
     this->m_numPoints = numPoints;
     this->m_radiansPerSec = ((float)rand() / RAND_MAX) * M_PI;
 
-    this->m_cartesianPlane.setCenter(0, 0);
-    this->m_cartesianPlane.setSize(target.getSize().x, (-1.0) * target.getSize().y);
+    this->m_cartesianPlane.setCenter({ 0.f, 0.f });
+    this->m_cartesianPlane.setSize({(float)target.getSize().x, (-1.0f) * (float)target.getSize().y });
 
     // maps the mouse click pos to Cartesian coords.
     this->m_centerCoordinate = target.mapPixelToCoords(mouseClickPosition, m_cartesianPlane);
@@ -59,14 +59,14 @@ void Particle::draw(RenderTarget& target, RenderStates states) const
         return;
     }
 
-    VertexArray lines(TriangleFan, m_numPoints + 1);
+    VertexArray lines(PrimitiveType::TriangleFan, m_numPoints + 1);
     
     // Maps Cartesian Coordinates to screen coords. it will then translate the origin to the center of screen
     // after that, it will flip the y-axis so positive y will point upwards.
     Vector2u size = target.getSize();
     Transform transform;
-    transform.translate(size.x / 2.0f, size.y / 2.0f);
-    transform.scale(1.0f, -1.0f);
+    transform.translate({ (float)size.x / 2.0f, (float)size.y / 2.0f });
+    transform.scale({ 1.0f, -1.0f });
     states.transform = transform;
 
     // Use Cartesian coordinates directly
@@ -122,7 +122,7 @@ void Particle::Update(float dt)
 
         float px = m_centerCoordinate.x + 960.0f;
         float py = 540.0f - m_centerCoordinate.y;
-        m_sprite.setPosition(px, py);
+        m_sprite.setPosition({ px, py });
         return;
     }
 

@@ -26,6 +26,7 @@ CMakeFiles/
 CMakeCache.txt
 *.cmake
 _deps/
+out/
 cmake_install.cmake
 CMakePresets.json
 

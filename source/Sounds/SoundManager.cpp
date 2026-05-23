@@ -30,7 +30,7 @@ SoundManager::SoundManager()
 				continue;
 			}
 			m_buffers[fileName] = buffer;
-			m_sounds[fileName].setBuffer(m_buffers[fileName]);
+			m_sounds[fileName] = make_unique<Sound>(m_buffers[fileName]);
 
 		}
 	}
@@ -52,13 +52,13 @@ void SoundManager::PlaySound(const string& fileName, float volume, bool bLoop)
 			return;
 		}
 		m_buffers[resolvedAudioPath] = buffer;
-		m_sounds[resolvedAudioPath].setBuffer(m_buffers[resolvedAudioPath]);
+		m_sounds[resolvedAudioPath] = make_unique<Sound>(m_buffers[resolvedAudioPath]);
 	}
 
 	// we'll allow loops assuming bLoop is set to true.
-	m_sounds[resolvedAudioPath].setVolume(volume);
-	m_sounds[resolvedAudioPath].setLoop(bLoop);
-	m_sounds[resolvedAudioPath].play();
+	m_sounds[resolvedAudioPath]->setVolume(volume);
+	m_sounds[resolvedAudioPath]->setLooping(bLoop);
+	m_sounds[resolvedAudioPath]->play();
 }
 
 void SoundManager::PlaySoundPooled(const string& fileName, float volume)
@@ -81,18 +81,19 @@ void SoundManager::PlaySoundPooled(const string& fileName, float volume)
 	// creates a pool of 8 instances if one does not exist.
 	if (m_soundPool.find(resolvedFile) == m_soundPool.end())
 	{
-		m_soundPool[resolvedFile] = vector<Sound>(8);
-		for (Sound& s : m_soundPool[resolvedFile])
+		m_soundPool[resolvedFile].reserve(8);
+
+		// we must now construct with buffers instead.
+		for (int i = 0; i < 8; i++)
 		{
-			s.setBuffer(m_buffers[resolvedFile]);
+			m_soundPool[resolvedFile].push_back(make_unique<Sound>(m_buffers[resolvedFile]));
 		}
 		m_poolIndex[resolvedFile] = 0;
 	}
 
 	// get the next avaliabel sound in pool
 	int& index = m_poolIndex[resolvedFile];
-	Sound& sound = m_soundPool[resolvedFile][index];
-
+	Sound& sound = *m_soundPool[resolvedFile][index];
 	sound.setVolume(volume);
 	sound.play();
 
@@ -108,14 +109,14 @@ void SoundManager::StopSound(const string& fileName)
 	auto it = m_sounds.find(fileName);
 	if (it != m_sounds.end())
 	{
-		it->second.stop();
+		it->second->stop();
 	}
 }
 
 void SoundManager::StopAll()
 {
 	for (auto& pair : m_sounds)
-		pair.second.stop();
+		pair.second->stop();
 }
 
 string SoundManager::ResolvePath(const string& fileName)

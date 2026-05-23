@@ -60,7 +60,7 @@ public:
         if (bLoaded)
         {
             m_sprite.SetScale(scale);
-            m_sprite.setRotation(rotation);
+            m_sprite.setRotation(sf::degrees(rotation));
         }
     }
 

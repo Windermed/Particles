@@ -28,12 +28,12 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/source PREFIX "source" FILES ${SOU
 
 add_executable(Particles ${SOURCES})
 
+# Set working directory to root
+set_target_properties(Particles PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+
 # to copy our dlls to the exe's directory.
 add_custom_command(TARGET Particles POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different
-	$<TARGET_RUNTIME_DLLS:Particles>
-	$<TARGET_FILE_DIR:Particles>
-	COMMAND_EXPAND_LISTS
+	COMMAND ${CMAKE_COMMAND} -E echo "Skipping DLL copy - using static libs"
 )
 
 # to copy our content folder to the exe's directory.
@@ -52,12 +52,13 @@ target_link_libraries(Particles PRIVATE
 )
 
 # adds many source directories as an include directory.
-target_include_directories(Particles PRIVATE source
-	source/Core
-	source/Engine
+target_include_directories(Particles PRIVATE
+	source
 	source/Bullet
 	source/Bullet/Attacks
 	source/Bullet/Spawners
+	source/Core
+	source/Engine
 	source/Particle
 	source/Player
 	source/Sounds

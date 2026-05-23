@@ -45,7 +45,7 @@ void Player::SetPlayerMode(PlayerMode playerMode)
 	{
 	case PlayerMode::Red:
 		m_playerSprite.Load("content/textures/player/spr_heart_red.png");
-		m_playerSprite.setRotation(0.0f);
+		m_playerSprite.setRotation(sf::degrees(0.0f));
 
 		// to avoid the sound from playing on menus or areas its not supposed to be in.
 		if (m_bIsPlayerInitialized) 
@@ -56,24 +56,24 @@ void Player::SetPlayerMode(PlayerMode playerMode)
 
 	case PlayerMode::Blue:
 		m_playerSprite.Load("content/textures/player/spr_heart_blue.png");
-		m_playerSprite.setRotation(0.0f);
+		m_playerSprite.setRotation(sf::degrees(0.0f));
 		SoundManager::GetInstance().PlaySound("snd_falling_01.wav", 30.0f);
 		break;
 	case PlayerMode::Yellow:
 		m_playerSprite.Load("content/textures/player/spr_heart_yellow.png");
-		m_playerSprite.setRotation(180.0f);
+		m_playerSprite.setRotation(sf::degrees(180.0f));
 		SoundManager::GetInstance().PlaySound("snd_player_yellow_activate.wav", 30.0f);
 		break;
 
 	default:
 		m_playerSprite.Load("content/textures/spr_placeholder.png");
-		m_playerSprite.setRotation(0.0f);
+		m_playerSprite.setRotation(sf::degrees(0.0f));
 		break;
 	}
 
 	// recenter our origin after texture swap just in case.
 	FloatRect bounds = m_playerSprite.getLocalBounds();
-	m_playerSprite.setOrigin(bounds.width / 2.0f, bounds.height / 2.0f);
+	m_playerSprite.setOrigin({ bounds.size.x / 2.0f, bounds.size.y / 2.0f });
 }
 
 void Player::CyclePlayerMode()
@@ -164,10 +164,9 @@ void Player::HandleInput(float dt)
 	// checks if we've reached the center. if so, player character related input is disabled.
 	if (m_bHasReachedCenter) return;
 
-	Keyboard EventPress;
-
-	bool bShiftHeld = Keyboard::isKeyPressed(Keyboard::LShift) || Keyboard::isKeyPressed(Keyboard::RShift);
-	bool bJumpKeyHeld = Keyboard::isKeyPressed(Keyboard::W) || Keyboard::isKeyPressed(Keyboard::Up) || Keyboard::isKeyPressed(Keyboard::Space);
+	// since keyboard is a namespace. we can't use a variable.
+	bool bShiftHeld = Keyboard::isKeyPressed(Keyboard::Key::LShift) || Keyboard::isKeyPressed(Keyboard::Key::RShift);
+	bool bJumpKeyHeld = Keyboard::isKeyPressed(Keyboard::Key::W) || Keyboard::isKeyPressed(Keyboard::Key::Up) || Keyboard::isKeyPressed(Keyboard::Key::Space);
 
 	float currentSpeed = bShiftHeld ? m_ShiftSpeed : m_PlayerSpeed;
 
@@ -184,25 +183,25 @@ void Player::HandleInput(float dt)
 		// Track movement direction for bullet firing
 		Vector2f dir(0.0f, 0.0f);
 
-		if (Keyboard::isKeyPressed(Keyboard::W) || Keyboard::isKeyPressed(Keyboard::Up))
+		if (Keyboard::isKeyPressed(Keyboard::Key::W) || Keyboard::isKeyPressed(Keyboard::Key::Up))
 		{
 			m_position.y -= currentSpeed * dt; // 240 fps monitor does not like 60.0f.
 			dir.y = -1.0f;
 		}
 
-		if (Keyboard::isKeyPressed(Keyboard::A) || Keyboard::isKeyPressed(Keyboard::Left))
+		if (Keyboard::isKeyPressed(Keyboard::Key::A) || Keyboard::isKeyPressed(Keyboard::Key::Left))
 		{
 			m_position.x -= currentSpeed * dt;
 			dir.x = -1.0f;
 		}
 
-		if (Keyboard::isKeyPressed(Keyboard::S) || Keyboard::isKeyPressed(Keyboard::Down))
+		if (Keyboard::isKeyPressed(Keyboard::Key::S) || Keyboard::isKeyPressed(Keyboard::Key::Down))
 		{
 			m_position.y += currentSpeed * dt;
 			dir.y = 1.0f;
 		}
 
-		if (Keyboard::isKeyPressed(Keyboard::D) || Keyboard::isKeyPressed(Keyboard::Right))
+		if (Keyboard::isKeyPressed(Keyboard::Key::D) || Keyboard::isKeyPressed(Keyboard::Key::Right))
 		{
 			m_position.x += currentSpeed * dt; //(1.0f / 60.0f)
 			dir.x = 1.0f;
@@ -219,7 +218,7 @@ void Player::HandleInput(float dt)
 
 		if (m_playerMode == PlayerMode::Yellow)
 		{
-			bool bIsZPressed = Keyboard::isKeyPressed(Keyboard::Z);
+			bool bIsZPressed = Keyboard::isKeyPressed(Keyboard::Key::Z);
 
 			if (bIsZPressed && !m_fireHeld)
 			{
@@ -252,7 +251,7 @@ void Player::HandleInput(float dt)
 		float currentSpeed = bShiftHeld ? m_ShiftSpeed : m_PlayerSpeed;
 
 		// jump only when we are grounded.
-		if (Keyboard::isKeyPressed(Keyboard::W) || Keyboard::isKeyPressed(Keyboard::Up) || Keyboard::isKeyPressed(Keyboard::Space))
+		if (Keyboard::isKeyPressed(Keyboard::Key::W) || Keyboard::isKeyPressed(Keyboard::Key::Up) || Keyboard::isKeyPressed(Keyboard::Key::Space))
 		{
 			if (bJumpKeyHeld && !m_bIsJumpHeld && m_bIsGrounded)
 			{
@@ -263,12 +262,12 @@ void Player::HandleInput(float dt)
 			
 		}
 
-		if (Keyboard::isKeyPressed(Keyboard::A) || Keyboard::isKeyPressed(Keyboard::Left))
+		if (Keyboard::isKeyPressed(Keyboard::Key::A) || Keyboard::isKeyPressed(Keyboard::Key::Left))
 		{
 			m_position.x -= currentSpeed * dt;
 		}
 
-		if (Keyboard::isKeyPressed(Keyboard::D) || Keyboard::isKeyPressed(Keyboard::Right))
+		if (Keyboard::isKeyPressed(Keyboard::Key::D) || Keyboard::isKeyPressed(Keyboard::Key::Right))
 		{
 			m_position.x += currentSpeed * dt;
 		}
@@ -414,10 +413,10 @@ void Player::Draw(RenderWindow& window)
 		hitbox.setFillColor(Color(0, 255, 0, 80));
 		hitbox.setOutlineColor(Color::Green);
 		hitbox.setOutlineThickness(1.0f);
-		hitbox.setOrigin(m_hitRadius, m_hitRadius);
+		hitbox.setOrigin({ m_hitRadius, m_hitRadius });
 		
 		Vector2f cartPos = GetCartesianPosition();
-		hitbox.setPosition(cartPos.x + 960.0f, 540.0f - cartPos.y);
+		hitbox.setPosition({ cartPos.x + 960.0f, 540.0f - cartPos.y });
 		window.draw(hitbox);
 	}
 }
