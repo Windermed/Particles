@@ -17,8 +17,8 @@ FetchContent_Declare(
 # Enables the solution folder grouping in visual studio
 FetchContent_MakeAvailable(SFML)
 
-# collect the project's source files
-file(GLOB_RECURSE SOURCES "source/*.cpp")
+# collect the project's source and header files located under /source.
+file(GLOB_RECURSE SOURCES "source/*.cpp" "source/*.h")
 
 # Automatically reconfigures CMake whenever new files are added to the source folder.
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "source")
